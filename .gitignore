@@ -1,0 +1,7 @@
+SFML/
+bin/
+temp/
+*.obj
+*.pdb
+.vscode/
+
