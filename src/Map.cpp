@@ -5,21 +5,7 @@
 
 #include "Map.h"
 
-std::vector<int> &parseTextureTiles(std::filesystem::path path, std::vector<int> &v)
-{
-    std::ifstream fin(path);
-    int val;
-
-    while (fin >> val)
-    {
-        v.push_back(val);
-
-        if (fin.peek() == ',')
-            fin.ignore();
-    }
-
-    return v;
-}
+std::vector<int> &parseTextureTiles(std::filesystem::path path, std::vector<int> &v);
 
 Map::Map() : worldTexture{}, backgroundVertices{sf::PrimitiveType::Triangles, worldSizeTiles.x * worldSizeTiles.y * 6}, backgroundTexTiles{(int)(worldSizeTiles.x * worldSizeTiles.y)}
 {
@@ -44,6 +30,7 @@ void Map::Load()
         return;
     }
 
+    // Load background vertices
     for (int y = 0; y < worldSizeTiles.y; ++y)
     {
         for (int x = 0; x < worldSizeTiles.x; ++x)
@@ -89,4 +76,20 @@ void Map::Update(float deltaTime)
 void Map::Draw(sf::RenderWindow &window)
 {
     window.draw(backgroundVertices, &worldTexture);
+}
+
+std::vector<int> &parseTextureTiles(std::filesystem::path path, std::vector<int> &v)
+{
+    std::ifstream fin(path);
+    int val;
+
+    while (fin >> val)
+    {
+        v.push_back(val);
+
+        if (fin.peek() == ',')
+            fin.ignore();
+    }
+
+    return v;
 }

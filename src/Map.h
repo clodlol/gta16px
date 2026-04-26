@@ -5,6 +5,15 @@
 
 class Map
 {
+public:
+    Map();
+    ~Map();
+
+    void Initialize();
+    void Load();
+    void Update(float deltaTime);
+    void Draw(sf::RenderWindow &window);
+
 private:
     const sf::Vector2f tileSize{16, 16};
     const sf::Vector2f worldSizeTiles{100, 100};
@@ -14,13 +23,4 @@ private:
     std::vector<int> backgroundTexTiles;
     // midground tiles
     // foreground tiles
-
-public:
-    Map();
-    ~Map();
-
-    void Initialize();
-    void Load();
-    void Update(float deltaTime);
-    void Draw(sf::RenderWindow &window);
 };
