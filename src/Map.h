@@ -6,15 +6,12 @@
 class Map
 {
 private:
-    const int tileWidth, tileHeight = 16;
-    const int tilesPerRow = 37;
-    const int tilesPerColumn = 28;
-
-    const int worldWidthTiles = 100;
-    const int worldHeightTiles = 100;
+    const sf::Vector2f tileSize{16, 16};
+    const sf::Vector2f worldSizeTiles{100, 100};
 
     sf::Texture worldTexture;
-    sf::VertexArray backgroundTiles;
+    sf::VertexArray backgroundVertices;
+    std::vector<int> backgroundTexTiles;
     // midground tiles
     // foreground tiles
 

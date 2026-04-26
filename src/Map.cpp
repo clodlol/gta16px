@@ -1,10 +1,32 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <SFML/Graphics.hpp>
 
 #include "Map.h"
 
-Map::Map() : tileWidth{16}, tileHeight{16}, tilesPerRow{37}, tilesPerColumn{28}, worldWidthTiles{100}, worldHeightTiles{100}, worldTexture{}, backgroundTiles{sf::PrimitiveType::TriangleStrip, worldWidthTiles * worldHeightTiles * 6} {}
+std::vector<int> &parseTextureTiles(std::filesystem::path path, std::vector<int> &v)
+{
+    std::ifstream fin(path);
+    int val;
+
+    while (fin >> val)
+    {
+        v.push_back(val);
+
+        if (fin.peek() == ',')
+            fin.ignore();
+    }
+
+    return v;
+}
+
+Map::Map() : worldTexture{}, backgroundVertices{sf::PrimitiveType::Triangles, worldSizeTiles.x * worldSizeTiles.y * 6}, backgroundTexTiles{(int)(worldSizeTiles.x * worldSizeTiles.y)}
+{
+    parseTextureTiles("../world/baselayer.csv", backgroundTexTiles);
+
+    std::cout << "Found " << backgroundTexTiles.size() << " tiles in background texture map file.\n";
+}
 
 Map::~Map()
 {
@@ -22,19 +44,26 @@ void Map::Load()
         return;
     }
 
-    for (int y = 0; y < worldHeightTiles; ++y)
+    for (int y = 0; y < worldSizeTiles.y; ++y)
     {
-        for (int x = 0; x < worldWidthTiles; ++x)
+        for (int x = 0; x < worldSizeTiles.x; ++x)
         {
-            int index = (x + y * worldWidthTiles) * 6;
-            sf::Vertex *v = &backgroundTiles[index];
+            int tileNumber = backgroundTexTiles[x + y * worldSizeTiles.x];
 
-            float left = x * (float)tileWidth;
-            float right = (x + 1) * (float)tileWidth;
-            float top = y * (float)tileHeight;
-            float bottom = (y + 1) * (float)tileHeight;
+            int tu = tileNumber % (int(worldTexture.getSize().x / tileSize.x));
+            int tv = tileNumber / (worldTexture.getSize().x / tileSize.x);
 
-            float tL = 0.f, tR = 16.f, tT = 0.f, tB = 16.f;
+            sf::Vertex *v = &backgroundVertices[(x + y * worldSizeTiles.x) * 6];
+
+            float left = x * (float)tileSize.x;
+            float right = (x + 1) * (float)tileSize.x;
+            float top = y * (float)tileSize.y;
+            float bottom = (y + 1) * (float)tileSize.y;
+
+            float tLeft = tu * (float)tileSize.x;
+            float tRight = (tu + 1) * (float)tileSize.x;
+            float tTop = tv * (float)tileSize.y;
+            float tBottom = (tv + 1) * (float)tileSize.y;
 
             v[0].position = {left, top};
             v[1].position = {right, top};
@@ -43,12 +72,12 @@ void Map::Load()
             v[4].position = {left, bottom};
             v[5].position = {left, top};
 
-            v[0].texCoords = {tL, tT};
-            v[1].texCoords = {tR, tT};
-            v[2].texCoords = {tR, tB};
-            v[3].texCoords = {tR, tB};
-            v[4].texCoords = {tL, tB};
-            v[5].texCoords = {tL, tT};
+            v[0].texCoords = {tLeft, tTop};
+            v[1].texCoords = {tRight, tTop};
+            v[2].texCoords = {tRight, tBottom};
+            v[3].texCoords = {tRight, tBottom};
+            v[4].texCoords = {tLeft, tBottom};
+            v[5].texCoords = {tLeft, tTop};
         }
     }
 }
@@ -59,5 +88,5 @@ void Map::Update(float deltaTime)
 
 void Map::Draw(sf::RenderWindow &window)
 {
-    window.draw(backgroundTiles, &worldTexture);
+    window.draw(backgroundVertices, &worldTexture);
 }
