@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "Map.h"
+#include "InputManager.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -15,6 +16,7 @@ int main()
 
     // Create object here
     Map map;
+    InputManager input;
 
     // Initialize here
     map.Initialize();

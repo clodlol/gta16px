@@ -1,3 +1,5 @@
+#pragma once
+
 #include <unordered_map>
 
 class InputManager
@@ -8,5 +10,4 @@ public:
 
 private:
     std::unordered_map<std::string, bool> actionMap{};
-    // Returns whether an action is active or not
 };
