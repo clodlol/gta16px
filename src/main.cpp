@@ -3,6 +3,7 @@
 
 #include "Map.h"
 #include "InputManager.h"
+#include "Player.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -17,19 +18,23 @@ int main()
     // Create object here
     Map map;
     InputManager input;
+    Player player;
+    sf::View camera(sf::FloatRect({0.f, 0.f}, {200.f, 200.f}));
 
     // Initialize here
     map.Initialize();
+    player.Initialize();
 
     // Load here
     map.Load();
+    player.Load();
 
     sf::Clock clock;
 
     while (window.isOpen())
     {
         sf::Time deltatimeTimer = clock.restart();
-        double deltaTime = deltatimeTimer.asMicroseconds() / 1000.0;
+        double deltaTime = deltatimeTimer.asSeconds();
 
         while (const std::optional event = window.pollEvent())
         {
@@ -39,11 +44,21 @@ int main()
 
         // Update here
         map.Update(deltaTime);
+        input.Update();
+        player.Update(deltaTime, input, camera);
+
+        if (input.IsActionActive("ZoomIn"))
+            camera.zoom(0.99f);
+        if (input.IsActionActive("ZoomOut"))
+            camera.zoom(1.01f);
 
         window.clear(sf::Color::Black);
 
+        window.setView(camera);
+
         // Draw here
         map.Draw(window);
+        player.Draw(window);
 
         window.display();
     }

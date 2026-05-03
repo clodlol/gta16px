@@ -9,9 +9,6 @@ std::vector<int> &parseTextureTiles(std::filesystem::path path, std::vector<int>
 
 Map::Map() : worldTexture{}, backgroundVertices{sf::PrimitiveType::Triangles, worldSizeTiles.x * worldSizeTiles.y * 6}, backgroundTexTiles{(int)(worldSizeTiles.x * worldSizeTiles.y)}
 {
-    parseTextureTiles("../world/baselayer.csv", backgroundTexTiles);
-
-    std::cout << "Found " << backgroundTexTiles.size() << " tiles in background texture map file.\n";
 }
 
 Map::~Map()
@@ -20,6 +17,10 @@ Map::~Map()
 
 void Map::Initialize()
 {
+
+    parseTextureTiles("../world/baselayer.csv", backgroundTexTiles);
+
+    std::cout << "Found " << backgroundTexTiles.size() << " tiles in background texture map file.\n";
 }
 
 void Map::Load()
