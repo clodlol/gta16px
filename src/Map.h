@@ -7,11 +7,9 @@ class Map
 {
 public:
     Map();
-    ~Map();
 
     void Initialize();
     void Load();
-    void Update(float deltaTime);
     void Draw(sf::RenderWindow &window);
 
 private:

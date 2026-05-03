@@ -11,10 +11,6 @@ Map::Map() : worldTexture{}, backgroundVertices{sf::PrimitiveType::Triangles, wo
 {
 }
 
-Map::~Map()
-{
-}
-
 void Map::Initialize()
 {
 
@@ -68,10 +64,6 @@ void Map::Load()
             v[5].texCoords = {tLeft, tTop};
         }
     }
-}
-
-void Map::Update(float deltaTime)
-{
 }
 
 void Map::Draw(sf::RenderWindow &window)

@@ -43,7 +43,6 @@ int main()
         }
 
         // Update here
-        map.Update(deltaTime);
         input.Update();
         player.Update(deltaTime, input, camera);
 

@@ -10,9 +10,6 @@ Player::Player() : playerTexture{}, playerSprite{playerTexture}
 {
 }
 
-Player::~Player()
-{
-}
 void Player::Initialize()
 {
     speed = 50;
@@ -39,13 +36,25 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
     sf::Vector2f movement{0.f, 0.f};
 
     if (input.IsActionActive("MoveLeft"))
+    {
         movement.x -= 1;
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE}, {TILE_SIZE, TILE_SIZE}));
+    }
     if (input.IsActionActive("MoveRight"))
+    {
         movement.x += 1;
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 2}, {TILE_SIZE, TILE_SIZE}));
+    }
     if (input.IsActionActive("MoveUp"))
+    {
         movement.y -= 1;
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 3}, {TILE_SIZE, TILE_SIZE}));
+    }
     if (input.IsActionActive("MoveDown"))
+    {
         movement.y += 1;
+        playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
+    }
 
     float length = std::sqrt(movement.x * movement.x + movement.y * movement.y);
     if (length > 0)
