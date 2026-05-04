@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "InputManager.h"
 #include "Player.h"
+#include "Weapon.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -43,7 +44,7 @@ int main()
         }
 
         // Update here
-        input.Update();
+        input.Update(window);
         player.Update(deltaTime, input, camera);
 
         if (input.IsActionActive("ZoomIn"))

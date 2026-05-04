@@ -29,6 +29,8 @@ void Player::Load()
     }
 
     playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
+
+    gun.Load();
 }
 
 void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
@@ -81,9 +83,17 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
     }
 
     camera.setCenter(newCamCenter);
+
+    if (input.IsActionActive("Fire"))
+        gun.Fire();
+    else
+        gun.StopFire();
+
+    gun.Update(deltaTime, input, camera);
 }
 
 void Player::Draw(sf::RenderWindow &window)
 {
     window.draw(playerSprite);
+    gun.Draw(window);
 }

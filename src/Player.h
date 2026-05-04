@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "InputManager.h"
+#include "Weapon.h"
 
 class Player
 {
@@ -18,6 +19,8 @@ public:
 private:
     sf::Texture playerTexture;
     sf::Sprite playerSprite;
+
+    Weapon gun;
 
     int health;
     float speed;
