@@ -6,7 +6,7 @@
 
 #define TILE_SIZE 59
 
-Player::Player() : playerTexture{}, playerSprite{playerTexture}
+Player::Player() : playerTexture{}, playerSprite{playerTexture}, gun{95.f, 4.f}
 {
 }
 
