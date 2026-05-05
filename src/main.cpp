@@ -44,7 +44,7 @@ int main()
         }
 
         // Update here
-        input.Update(window);
+        input.Update(window, camera);
         player.Update(deltaTime, input, camera);
 
         if (input.IsActionActive("ZoomIn"))

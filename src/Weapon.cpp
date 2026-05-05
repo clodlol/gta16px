@@ -5,7 +5,7 @@
 
 #define TILE_SIZE 225
 
-Weapon::Weapon(float vel, float rate) : bulletVelocity{vel}, fireRate{rate} {}
+Weapon::Weapon(float vel, float rate) : bulletVelocity{vel}, fireRate{rate}, cooldownTimer{1 / fireRate} {}
 
 void Weapon::Load()
 {
@@ -28,28 +28,39 @@ void Weapon::StopFire()
 
 void Weapon::Update(float deltaTime, InputManager &input, sf::View &camera)
 {
-    if (firing)
+    cooldownTimer -= deltaTime;
+
+    if (firing && cooldownTimer <= 0.f)
     {
-        sf::Sprite newBullet = sf::Sprite(bulletTexture, sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
-        newBullet.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
-        newBullet.scale({8.f / TILE_SIZE, 8.f / TILE_SIZE});
-        newBullet.setPosition(camera.getCenter());
+        cooldownTimer = 1 / fireRate;
+
+        Bullet newBullet(bulletTexture);
+        newBullet.direction = input.GetMousePosition();
+
+        newBullet.sprite = sf::Sprite(bulletTexture, sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
+        newBullet.sprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
+        newBullet.sprite.scale({8.f / TILE_SIZE, 8.f / TILE_SIZE});
+        newBullet.sprite.rotate(newBullet.direction.angle());
+
+        newBullet.origin = camera.getCenter();
+
+        newBullet.sprite.setPosition(newBullet.origin);
+        newBullet.direction = input.GetMousePosition();
+
         bullets.push_back(newBullet);
     }
 
     bullets.erase(
         std::remove_if(bullets.begin(), bullets.end(),
-                       [&](sf::Sprite &bullet)
+                       [&](Bullet &bullet)
                        {
-                           if (bullet.getPosition().x < (camera.getCenter().x + camera.getSize().x / 2) && bullet.getPosition().x > (camera.getCenter().x - camera.getSize().x / 2))
+                           if (bullet.sprite.getPosition().x < (camera.getCenter().x + camera.getSize().x / 2) && bullet.sprite.getPosition().x > (camera.getCenter().x - camera.getSize().x / 2))
                            {
-                               bullet.move({bulletVelocity * deltaTime, 0});
-                               return false;
-                           }
+                               if (bullet.sprite.getPosition().y < (camera.getCenter().y + camera.getSize().y / 2) && bullet.sprite.getPosition().y > (camera.getCenter().y - camera.getSize().y / 2))
+                               {
+                                   bullet.sprite.move({cos(bullet.direction.angle().asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.angle().asRadians()) * bulletVelocity * deltaTime});
+                               }
 
-                           if (bullet.getPosition().y < (camera.getCenter().y + camera.getSize().y / 2) && bullet.getPosition().y > (camera.getCenter().y - camera.getSize().y / 2))
-                           {
-                               bullet.move({bulletVelocity * deltaTime, 0});
                                return false;
                            }
 
@@ -61,6 +72,6 @@ void Weapon::Update(float deltaTime, InputManager &input, sf::View &camera)
 
 void Weapon::Draw(sf::RenderWindow &window)
 {
-    for (const sf::Sprite &bullet : bullets)
-        window.draw(bullet);
+    for (const Bullet &bullet : bullets)
+        window.draw(bullet.sprite);
 }

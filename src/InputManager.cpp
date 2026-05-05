@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 
@@ -8,7 +9,12 @@ bool InputManager::IsActionActive(const std::string &action)
     return actionMap.count(action) ? actionMap[action] : false;
 }
 
-void InputManager::Update(sf::RenderWindow &window)
+sf::Vector2f &InputManager::GetMousePosition()
+{
+    return mousePos;
+}
+
+void InputManager::Update(sf::RenderWindow &window, sf::View &camera)
 {
     // Movement
     actionMap["MoveLeft"] = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A);
@@ -24,4 +30,8 @@ void InputManager::Update(sf::RenderWindow &window)
     actionMap["Fire"] = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
 
     // calculations for mouse pos
+    sf::Vector2f worldMouse = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    mousePos = worldMouse - camera.getCenter();
+
+    // std::cout << "Mouse X: " << mousePos.x << " Mouse Y: " << mousePos.y << "\n";
 }

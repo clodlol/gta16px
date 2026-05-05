@@ -4,6 +4,15 @@
 
 #include "InputManager.h"
 
+struct Bullet
+{
+    Bullet(const sf::Texture &tex) : sprite(tex) {}
+
+    sf::Sprite sprite;
+    sf::Vector2f origin;
+    sf::Vector2f direction;
+};
+
 class Weapon
 {
 public:
@@ -17,9 +26,11 @@ public:
 
 private:
     sf::Texture bulletTexture;
-    std::vector<sf::Sprite> bullets;
+    std::vector<Bullet> bullets;
+
+    const float bulletVelocity;
+    const float fireRate; // bullets per second
 
     bool firing;
-    float bulletVelocity;
-    float fireRate; // bullets per second
+    float cooldownTimer;
 };
