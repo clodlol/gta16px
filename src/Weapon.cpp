@@ -16,8 +16,10 @@ void Weapon::Load()
     }
 }
 
-void Weapon::Fire()
+void Weapon::Fire(const sf::Vector2f &origin, const sf::Angle &direction)
 {
+    currentOrigin = origin;
+    currentDirection = direction;
     firing = true;
 }
 
@@ -26,7 +28,7 @@ void Weapon::StopFire()
     firing = false;
 }
 
-void Weapon::Update(float deltaTime, InputManager &input, sf::View &camera)
+void Weapon::Update(float deltaTime, sf::View &camera)
 {
     cooldownTimer -= deltaTime;
 
@@ -35,17 +37,17 @@ void Weapon::Update(float deltaTime, InputManager &input, sf::View &camera)
         cooldownTimer = 1 / fireRate;
 
         Bullet newBullet(bulletTexture);
-        newBullet.direction = input.GetMousePosition();
+        newBullet.direction = currentDirection;
 
         newBullet.sprite = sf::Sprite(bulletTexture, sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
         newBullet.sprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
         newBullet.sprite.scale({8.f / TILE_SIZE, 8.f / TILE_SIZE});
-        newBullet.sprite.rotate(newBullet.direction.angle());
+        newBullet.sprite.rotate(currentDirection);
 
-        newBullet.origin = camera.getCenter();
+        newBullet.origin = currentOrigin;
 
         newBullet.sprite.setPosition(newBullet.origin);
-        newBullet.direction = input.GetMousePosition();
+        newBullet.direction = currentDirection;
 
         bullets.push_back(newBullet);
     }
@@ -54,14 +56,14 @@ void Weapon::Update(float deltaTime, InputManager &input, sf::View &camera)
         std::remove_if(bullets.begin(), bullets.end(),
                        [&](Bullet &bullet)
                        {
-                           if (bullet.sprite.getPosition().x < (camera.getCenter().x + camera.getSize().x / 2) && bullet.sprite.getPosition().x > (camera.getCenter().x - camera.getSize().x / 2))
+                           if (bullet.sprite.getPosition().x <= (camera.getCenter().x + camera.getSize().x / 2) && bullet.sprite.getPosition().x >= (camera.getCenter().x - camera.getSize().x / 2))
                            {
-                               if (bullet.sprite.getPosition().y < (camera.getCenter().y + camera.getSize().y / 2) && bullet.sprite.getPosition().y > (camera.getCenter().y - camera.getSize().y / 2))
+                               if (bullet.sprite.getPosition().y <= (camera.getCenter().y + camera.getSize().y / 2) && bullet.sprite.getPosition().y >= (camera.getCenter().y - camera.getSize().y / 2))
                                {
-                                   bullet.sprite.move({cos(bullet.direction.angle().asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.angle().asRadians()) * bulletVelocity * deltaTime});
-                               }
+                                   bullet.sprite.move({cos(bullet.direction.asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.asRadians()) * bulletVelocity * deltaTime});
 
-                               return false;
+                                   return false;
+                               }
                            }
 
                            return true;

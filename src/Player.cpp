@@ -85,11 +85,11 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
     camera.setCenter(newCamCenter);
 
     if (input.IsActionActive("Fire"))
-        gun.Fire();
+        gun.Fire(playerSprite.getPosition(), input.GetMousePosition().angle());
     else
         gun.StopFire();
 
-    gun.Update(deltaTime, input, camera);
+    gun.Update(deltaTime, camera);
 }
 
 void Player::Draw(sf::RenderWindow &window)

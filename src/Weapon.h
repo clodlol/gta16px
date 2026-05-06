@@ -10,7 +10,7 @@ struct Bullet
 
     sf::Sprite sprite;
     sf::Vector2f origin;
-    sf::Vector2f direction;
+    sf::Angle direction;
 };
 
 class Weapon
@@ -18,10 +18,11 @@ class Weapon
 public:
     Weapon(float vel = 75.0f, float rate = 1.f);
 
-    void Fire();
+    void Fire(const sf::Vector2f &origin, const sf::Angle &direction);
     void StopFire();
+
     void Load();
-    void Update(float deltaTime, InputManager &input, sf::View &camera);
+    void Update(float deltaTime, sf::View &camera);
     void Draw(sf::RenderWindow &window);
 
 private:
@@ -32,5 +33,7 @@ private:
     const float fireRate; // bullets per second
 
     bool firing;
+    sf::Vector2f currentOrigin;
+    sf::Angle currentDirection;
     float cooldownTimer;
 };
