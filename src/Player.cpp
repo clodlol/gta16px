@@ -39,22 +39,22 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
 
     if (input.IsActionActive("MoveLeft"))
     {
-        movement.x -= 1;
+        movement.x -= speed * deltaTime;
         playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE}, {TILE_SIZE, TILE_SIZE}));
     }
     if (input.IsActionActive("MoveRight"))
     {
-        movement.x += 1;
+        movement.x += speed * deltaTime;
         playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 2}, {TILE_SIZE, TILE_SIZE}));
     }
     if (input.IsActionActive("MoveUp"))
     {
-        movement.y -= 1;
+        movement.y -= speed * deltaTime;
         playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 3}, {TILE_SIZE, TILE_SIZE}));
     }
     if (input.IsActionActive("MoveDown"))
     {
-        movement.y += 1;
+        movement.y += speed * deltaTime;
         playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
     }
 
