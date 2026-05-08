@@ -1,25 +1,39 @@
 #pragma once
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 #include "InputManager.h"
+#include "Collidable.h"
 
-struct Bullet
+struct Bullet : public Collidable
 {
+public:
+    sf::FloatRect GetBounds() override
+    {
+        return sprite.getGlobalBounds();
+    }
+
     Bullet(const sf::Texture &tex) : sprite(tex) {}
 
     sf::Sprite sprite;
+
+    std::string source;
     sf::Vector2f origin;
     sf::Angle direction;
+
+    int damage;
 };
 
 class Weapon
 {
 public:
-    Weapon(float vel = 75.0f, float rate = 1.f);
+    Weapon(float vel, float rate, int dmg);
 
-    void Fire(const sf::Vector2f &origin, const sf::Angle &direction);
+    void Fire(const sf::Vector2f &origin, const sf::Angle &direction, const std::string &source);
     void StopFire();
+    void SetStats(float vel, float rate, int dmg);
+    const Bullet &GetCurrentBullet();
 
     void Load();
     void Update(float deltaTime, sf::View &camera);
@@ -27,13 +41,13 @@ public:
 
 private:
     sf::Texture bulletTexture;
+    Bullet currentBullet;
     std::vector<Bullet> bullets;
 
-    const float bulletVelocity;
-    const float fireRate; // bullets per second
+    float bulletVelocity;
+    float fireRate; // bullets per second
+    int damage;
 
     bool firing;
-    sf::Vector2f currentOrigin;
-    sf::Angle currentDirection;
     float cooldownTimer;
 };

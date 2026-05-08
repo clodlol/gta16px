@@ -6,18 +6,31 @@
 
 #define TILE_SIZE 59
 
-Player::Player() : playerTexture{}, playerSprite{playerTexture}, gun{95.f, 4.f}
+sf::FloatRect Player::GetBounds()
+{
+    return playerSprite.getGlobalBounds();
+}
+
+Player::Player() : playerTexture{}, playerSprite{playerTexture}
 {
 }
 
 void Player::Initialize()
 {
     speed = 50;
+    defense = 10;
     health = 100;
+
+    gun.SetStats(75.f, 10.f, 20);
 
     playerSprite.setPosition({1000.f, 1000.f});
     playerSprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
     playerSprite.setScale({16.f / TILE_SIZE, 16.f / TILE_SIZE});
+}
+
+void Player::TakeDamage(int sourceDamage)
+{
+    health -= (sourceDamage * (defense / 100));
 }
 
 void Player::Load()
@@ -85,7 +98,7 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
     camera.setCenter(newCamCenter);
 
     if (input.IsActionActive("Fire"))
-        gun.Fire(playerSprite.getPosition(), input.GetMousePosition().angle());
+        gun.Fire(playerSprite.getPosition(), input.GetMousePosition().angle(), "Player");
     else
         gun.StopFire();
 

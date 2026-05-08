@@ -5,7 +5,9 @@
 
 #define TILE_SIZE 225
 
-Weapon::Weapon(float vel, float rate) : bulletVelocity{vel}, fireRate{rate}, cooldownTimer{1 / fireRate} {}
+Weapon::Weapon(float vel, float rate, int dmg) : bulletVelocity{vel}, fireRate{rate}, damage{dmg}, currentBullet{bulletTexture}
+{
+}
 
 void Weapon::Load()
 {
@@ -16,10 +18,19 @@ void Weapon::Load()
     }
 }
 
-void Weapon::Fire(const sf::Vector2f &origin, const sf::Angle &direction)
+void Weapon::Fire(const sf::Vector2f &origin, const sf::Angle &direction, const std::string &source)
 {
-    currentOrigin = origin;
-    currentDirection = direction;
+    currentBullet.source = source;
+    currentBullet.direction = direction;
+    currentBullet.origin = origin;
+    currentBullet.damage = damage;
+
+    currentBullet.sprite = sf::Sprite(bulletTexture, sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
+    currentBullet.sprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
+    currentBullet.sprite.scale({8.f / TILE_SIZE, 8.f / TILE_SIZE});
+    currentBullet.sprite.rotate(direction);
+    currentBullet.sprite.setPosition(currentBullet.origin);
+
     firing = true;
 }
 
@@ -28,47 +39,49 @@ void Weapon::StopFire()
     firing = false;
 }
 
+void Weapon::SetStats(float vel, float rate, int dmg)
+{
+    bulletVelocity = vel;
+    fireRate = rate;
+    damage = dmg;
+}
+
+const Bullet &Weapon::GetCurrentBullet()
+{
+    return currentBullet;
+}
+
 void Weapon::Update(float deltaTime, sf::View &camera)
 {
     cooldownTimer -= deltaTime;
 
     if (firing && cooldownTimer <= 0.f)
     {
-        cooldownTimer = 1 / fireRate;
 
-        Bullet newBullet(bulletTexture);
-        newBullet.direction = currentDirection;
-
-        newBullet.sprite = sf::Sprite(bulletTexture, sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
-        newBullet.sprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
-        newBullet.sprite.scale({8.f / TILE_SIZE, 8.f / TILE_SIZE});
-        newBullet.sprite.rotate(currentDirection);
-
-        newBullet.origin = currentOrigin;
-
-        newBullet.sprite.setPosition(newBullet.origin);
-        newBullet.direction = currentDirection;
-
-        bullets.push_back(newBullet);
+        bullets.push_back(currentBullet);
     }
 
-    bullets.erase(
-        std::remove_if(bullets.begin(), bullets.end(),
-                       [&](Bullet &bullet)
-                       {
-                           if (bullet.sprite.getPosition().x <= (camera.getCenter().x + camera.getSize().x / 2) && bullet.sprite.getPosition().x >= (camera.getCenter().x - camera.getSize().x / 2))
-                           {
-                               if (bullet.sprite.getPosition().y <= (camera.getCenter().y + camera.getSize().y / 2) && bullet.sprite.getPosition().y >= (camera.getCenter().y - camera.getSize().y / 2))
-                               {
-                                   bullet.sprite.move({cos(bullet.direction.asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.asRadians()) * bulletVelocity * deltaTime});
+    for (Bullet &bullet : bullets)
+    {
+        bullet.sprite.move({cos(bullet.direction.asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.asRadians()) * bulletVelocity * deltaTime});
+    }
 
-                                   return false;
-                               }
-                           }
+    // bullets.erase(
+    //     std::remove_if(bullets.begin(), bullets.end(),
+    //                    [&](Bullet &bullet)
+    //                    {
+    //                        if (bullet.sprite.getPosition().x <= (camera.getCenter().x + camera.getSize().x / 2) && bullet.sprite.getPosition().x >= (camera.getCenter().x - camera.getSize().x / 2))
+    //                        {
+    //                            if (bullet.sprite.getPosition().y <= (camera.getCenter().y + camera.getSize().y / 2) && bullet.sprite.getPosition().y >= (camera.getCenter().y - camera.getSize().y / 2))
+    //                            {
 
-                           return true;
-                       }),
-        bullets.end());
+    //                                return false;
+    //                            }
+    //                        }
+
+    //                        return true;
+    //                    }),
+    //     bullets.end());
     // what the actual fuck is this
 }
 
