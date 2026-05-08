@@ -16,6 +16,8 @@ public:
 
     void TakeDamage(int sourceDamage);
 
+    const sf::Sprite &GetSprite();
+
     void Load();
     void Update(float deltaTime, InputManager &input, sf::View &camera);
     void Draw(sf::RenderWindow &window);
@@ -24,7 +26,7 @@ private:
     sf::Texture playerTexture;
     sf::Sprite playerSprite;
 
-    Weapon gun{75.f, 10.f, 20};
+    Weapon gun{150.f, 5.f, 20};
 
     int health = 100;
     int defense = 10;

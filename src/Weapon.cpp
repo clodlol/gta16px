@@ -5,14 +5,14 @@
 
 #define TILE_SIZE 225
 
-Weapon::Weapon(float vel, float rate, int dmg) : bulletVelocity{vel}, fireRate{rate}, damage{dmg}, currentBullet{bulletTexture}
+Weapon::Weapon(float vel, float rate, int dmg) : bulletVelocity{vel}, fireRate{rate}, damage{dmg}
 {
     cooldownTimer = 1.f / fireRate;
 }
 
 void Weapon::Load()
 {
-    if (bulletTexture.loadFromFile("../assets/bullet.png"))
+    if (!bulletTexture.loadFromFile("../assets/bullet.png"))
     {
         std::cout << "Failed to load bullet texture\n ";
         return;
@@ -56,27 +56,21 @@ void Weapon::Update(float deltaTime, sf::View &camera)
         bullets.push_back(currentBullet);
     }
 
-    for (Bullet &bullet : bullets)
-    {
-        bullet.sprite.move({cos(bullet.direction.asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.asRadians()) * bulletVelocity * deltaTime});
-    }
+    bullets.erase(
+        std::remove_if(bullets.begin(), bullets.end(),
+                       [&](Bullet &bullet)
+                       {
+                           if (bullet.sprite.getPosition().x <= 0 && bullet.sprite.getPosition().x >= 1600)
+                               return true;
 
-    // bullets.erase(
-    //     std::remove_if(bullets.begin(), bullets.end(),
-    //                    [&](Bullet &bullet)
-    //                    {
-    //                        if (bullet.sprite.getPosition().x <= (camera.getCenter().x + camera.getSize().x / 2) && bullet.sprite.getPosition().x >= (camera.getCenter().x - camera.getSize().x / 2))
-    //                        {
-    //                            if (bullet.sprite.getPosition().y <= (camera.getCenter().y + camera.getSize().y / 2) && bullet.sprite.getPosition().y >= (camera.getCenter().y - camera.getSize().y / 2))
-    //                            {
+                           if (bullet.sprite.getPosition().y <= 0 && bullet.sprite.getPosition().y >= 1600)
+                               return true;
 
-    //                                return false;
-    //                            }
-    //                        }
+                           bullet.sprite.move({cos(bullet.direction.asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.asRadians()) * bulletVelocity * deltaTime});
 
-    //                        return true;
-    //                    }),
-    //     bullets.end());
+                           return false;
+                       }),
+        bullets.end());
     // what the actual fuck is this
 }
 

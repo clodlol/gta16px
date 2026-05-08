@@ -6,10 +6,11 @@
 #include "Player.h"
 #include "Weapon.h"
 #include "MobSpawner.h"
+#include "Officer.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-#define MAX_FPS 30
+#define MAX_FPS 60
 #define WINDOW_NAME "Grand Theft Auto 16px"
 
 int main()
@@ -22,6 +23,7 @@ int main()
     InputManager input;
     Player player;
     MobSpawner spawner;
+    Officer officer;
     sf::View camera(sf::FloatRect({0.f, 0.f}, {200.f, 200.f}));
 
     // Initialize here
@@ -32,6 +34,7 @@ int main()
     map.Load();
     player.Load();
     spawner.Load();
+    officer.Load();
 
     sf::Clock clock;
 
@@ -50,6 +53,7 @@ int main()
         input.Update(window, camera);
         player.Update(deltaTime, input, camera);
         spawner.Update(deltaTime);
+        officer.Update(deltaTime, camera, player);
 
         if (input.IsActionActive("ZoomIn"))
             camera.zoom(0.99f);
@@ -63,6 +67,7 @@ int main()
         map.Draw(window);
         player.Draw(window);
         spawner.Draw(window);
+        officer.Draw(window);
 
         window.display();
     }

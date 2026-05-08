@@ -15,9 +15,14 @@ Player::Player() : playerTexture{}, playerSprite{playerTexture}
 {
 }
 
+const sf::Sprite &Player::GetSprite()
+{
+    return playerSprite;
+}
+
 void Player::TakeDamage(int sourceDamage)
 {
-    health -= (sourceDamage * (defense / 100));
+    health -= (sourceDamage - sourceDamage * (defense / 100));
 }
 
 void Player::Load()
@@ -39,37 +44,41 @@ void Player::Load()
 
 void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
 {
-    sf::Vector2f movement{0.f, 0.f};
+    sf::Vector2f direction{0.f, 0.f};
 
     if (input.IsActionActive("MoveLeft"))
     {
-        movement.x -= speed * deltaTime;
-        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE}, {TILE_SIZE, TILE_SIZE}));
+        direction.x -= 1.f;
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 1}, {TILE_SIZE, TILE_SIZE}));
     }
     if (input.IsActionActive("MoveRight"))
     {
-        movement.x += speed * deltaTime;
+        direction.x += 1.f;
         playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 2}, {TILE_SIZE, TILE_SIZE}));
     }
     if (input.IsActionActive("MoveUp"))
     {
-        movement.y -= speed * deltaTime;
+        direction.y -= 1.f;
         playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 3}, {TILE_SIZE, TILE_SIZE}));
     }
     if (input.IsActionActive("MoveDown"))
     {
-        movement.y += speed * deltaTime;
-        playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
+        direction.y += 1.f;
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 0}, {TILE_SIZE, TILE_SIZE}));
     }
 
-    float length = std::sqrt(movement.x * movement.x + movement.y * movement.y);
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
     if (length > 0)
     {
-        movement /= length;
+        direction /= length;
     }
 
-    sf::Vector2f newPos = playerSprite.getPosition() + movement;
-    playerSprite.setPosition({std::clamp(newPos.x, 0.f, 1600.f), std::clamp(newPos.y, 0.f, 1600.f)});
+    sf::Vector2f movement = direction * speed * deltaTime;
+
+    sf::Vector2f currentPos = playerSprite.getPosition();
+    playerSprite.setPosition({std::clamp(currentPos.x + movement.x, 0.f, 1600.f),
+                              std::clamp(currentPos.y + movement.y, 0.f, 1600.f)});
 
     float newCamTopEdge = playerSprite.getPosition().y - camera.getSize().y / 2;
     float newCamLeftEdge = playerSprite.getPosition().x - camera.getSize().x / 2;

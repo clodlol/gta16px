@@ -40,7 +40,7 @@ public:
 
 private:
     sf::Texture bulletTexture;
-    Bullet currentBullet;
+    Bullet currentBullet{bulletTexture};
     std::vector<Bullet> bullets;
 
     float bulletVelocity = 1.f;
