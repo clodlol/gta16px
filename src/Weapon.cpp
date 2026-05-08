@@ -7,6 +7,7 @@
 
 Weapon::Weapon(float vel, float rate, int dmg) : bulletVelocity{vel}, fireRate{rate}, damage{dmg}, currentBullet{bulletTexture}
 {
+    cooldownTimer = 1.f / fireRate;
 }
 
 void Weapon::Load()
@@ -39,13 +40,6 @@ void Weapon::StopFire()
     firing = false;
 }
 
-void Weapon::SetStats(float vel, float rate, int dmg)
-{
-    bulletVelocity = vel;
-    fireRate = rate;
-    damage = dmg;
-}
-
 const Bullet &Weapon::GetCurrentBullet()
 {
     return currentBullet;
@@ -57,6 +51,7 @@ void Weapon::Update(float deltaTime, sf::View &camera)
 
     if (firing && cooldownTimer <= 0.f)
     {
+        cooldownTimer = 1 / fireRate;
 
         bullets.push_back(currentBullet);
     }

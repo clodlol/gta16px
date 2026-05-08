@@ -9,7 +9,7 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-#define MAX_FPS 200
+#define MAX_FPS 30
 #define WINDOW_NAME "Grand Theft Auto 16px"
 
 int main()
@@ -26,7 +26,6 @@ int main()
 
     // Initialize here
     map.Initialize();
-    player.Initialize();
     spawner.Initialize();
 
     // Load here

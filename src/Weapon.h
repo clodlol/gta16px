@@ -32,7 +32,6 @@ public:
 
     void Fire(const sf::Vector2f &origin, const sf::Angle &direction, const std::string &source);
     void StopFire();
-    void SetStats(float vel, float rate, int dmg);
     const Bullet &GetCurrentBullet();
 
     void Load();
@@ -44,10 +43,10 @@ private:
     Bullet currentBullet;
     std::vector<Bullet> bullets;
 
-    float bulletVelocity;
-    float fireRate; // bullets per second
-    int damage;
+    float bulletVelocity = 1.f;
+    float fireRate = 1.f; // bullets per second
+    int damage = 1;
 
-    bool firing;
-    float cooldownTimer;
+    bool firing = false;
+    float cooldownTimer = 1 / fireRate;
 };

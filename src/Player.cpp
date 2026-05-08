@@ -15,19 +15,6 @@ Player::Player() : playerTexture{}, playerSprite{playerTexture}
 {
 }
 
-void Player::Initialize()
-{
-    speed = 50;
-    defense = 10;
-    health = 100;
-
-    gun.SetStats(75.f, 10.f, 20);
-
-    playerSprite.setPosition({1000.f, 1000.f});
-    playerSprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
-    playerSprite.setScale({16.f / TILE_SIZE, 16.f / TILE_SIZE});
-}
-
 void Player::TakeDamage(int sourceDamage)
 {
     health -= (sourceDamage * (defense / 100));
@@ -42,6 +29,10 @@ void Player::Load()
     }
 
     playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
+
+    playerSprite.setPosition({1000.f, 1000.f});
+    playerSprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
+    playerSprite.setScale({16.f / TILE_SIZE, 16.f / TILE_SIZE});
 
     gun.Load();
 }
