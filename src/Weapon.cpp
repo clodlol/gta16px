@@ -1,81 +1,87 @@
-#include <iostream>
+// #include <iostream>
+// #include <type_traits>
 
-#include "Weapon.h"
-#include "InputManager.h"
+// #include "Weapon.h"
+// #include "InputManager.h"
 
-#define TILE_SIZE 225
+// #define TILE_SIZE 225
 
-Weapon::Weapon(float vel, float rate, int dmg) : bulletVelocity{vel}, fireRate{rate}, damage{dmg}
-{
-    cooldownTimer = 1.f / fireRate;
-}
+// template <typename T>
+// Weapon<T>::Weapon(float vel, float rate, int dmg) : velocity{vel}, fireRate{rate}, damage{dmg}
+// {
+//     cooldownTimer = 1.f / fireRate;
+// }
 
-void Weapon::Load()
-{
-    if (!bulletTexture.loadFromFile("../assets/bullet.png"))
-    {
-        std::cout << "Failed to load bullet texture\n ";
-        return;
-    }
-}
+// template <typename T>
+// void Weapon<T>::Load(std::filesystem::path filePath)
+// {
+//     if (!projectileTexture.loadFromFile(filePath))
+//     {
+//         std::cout << "Failed to load texture located at " << filePath << "\n";
+//         return;
+//     }
+// }
 
-void Weapon::Fire(const sf::Vector2f &origin, const sf::Angle &direction, const std::string &source)
-{
-    currentBullet.source = source;
-    currentBullet.direction = direction;
-    currentBullet.origin = origin;
-    currentBullet.damage = damage;
+// template <typename T>
+// void Weapon<T>::Fire(const T &projectile)
+// {
 
-    currentBullet.sprite = sf::Sprite(bulletTexture, sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
-    currentBullet.sprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
-    currentBullet.sprite.scale({8.f / TILE_SIZE, 8.f / TILE_SIZE});
-    currentBullet.sprite.rotate(direction);
-    currentBullet.sprite.setPosition(currentBullet.origin);
+//     currentProjectile = projectile;
 
-    firing = true;
-}
+//     firing = true;
+// }
 
-void Weapon::StopFire()
-{
-    firing = false;
-}
+// template <typename T>
+// void Weapon<T>::StopFire()
+// {
+//     firing = false;
+// }
 
-const Bullet &Weapon::GetCurrentBullet()
-{
-    return currentBullet;
-}
+// template <typename T>
+// const std::vector<T> &Weapon<T>::GetProjectiles() const
+// {
+//     return projectiles;
+// }
 
-void Weapon::Update(float deltaTime, sf::View &camera)
-{
-    cooldownTimer -= deltaTime;
+// template <typename T>
+// const sf::Texture &Weapon<T>::GetProjectileTexture() const
+// {
+//     return projectileTexture;
+// }
 
-    if (firing && cooldownTimer <= 0.f)
-    {
-        cooldownTimer = 1 / fireRate;
+// template <typename T>
+// void Weapon<T>::Update(float deltaTime)
+// {
+//     cooldownTimer -= deltaTime;
 
-        bullets.push_back(currentBullet);
-    }
+//     if (firing && cooldownTimer <= 0.f)
+//     {
+//         cooldownTimer = 1 / fireRate;
 
-    bullets.erase(
-        std::remove_if(bullets.begin(), bullets.end(),
-                       [&](Bullet &bullet)
-                       {
-                           if (bullet.sprite.getPosition().x <= 0 && bullet.sprite.getPosition().x >= 1600)
-                               return true;
+//         projectiles.push_back(currentProjectile);
+//     }
 
-                           if (bullet.sprite.getPosition().y <= 0 && bullet.sprite.getPosition().y >= 1600)
-                               return true;
+//     projectiles.erase(
+//         std::remove_if(projectiles.begin(), projectiles.end(),
+//                        [&](T &proj)
+//                        {
+//                            if (proj.GetSprite().getPosition().x <= 0 && proj.GetSprite().getPosition().x >= 1600)
+//                                return true;
 
-                           bullet.sprite.move({cos(bullet.direction.asRadians()) * bulletVelocity * deltaTime, sin(bullet.direction.asRadians()) * bulletVelocity * deltaTime});
+//                            if (proj.GetSprite().getPosition().y <= 0 && proj.GetSprite().getPosition().y >= 1600)
+//                                return true;
 
-                           return false;
-                       }),
-        bullets.end());
-    // what the actual fuck is this
-}
+//                            proj.MoveSprite({cos(proj.GetDirection().asRadians()) * velocity * deltaTime, sin(proj.GetDirection().asRadians()) * velocity * deltaTime})
 
-void Weapon::Draw(sf::RenderWindow &window)
-{
-    for (const Bullet &bullet : bullets)
-        window.draw(bullet.sprite);
-}
+//                                return false;
+//                        }),
+//         projectiles.end());
+//     // what the actual fuck is this
+// }
+
+// template <typename T>
+// void Weapon<T>::Draw(sf::RenderWindow &window)
+// {
+//     for (const Bullet &bullet : bullets)
+//         window.draw(bullet.sprite);
+// }

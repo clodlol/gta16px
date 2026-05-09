@@ -12,10 +12,10 @@ class Officer : public Collidable
 public:
     Officer();
 
-    sf::FloatRect GetBounds() override;
+    sf::FloatRect GetBounds() const override;
+    const sf::Sprite &GetSprite() const override;
 
     void TakeDamage(int sourceDamage);
-    void Kill();
 
     void Load();
     void Update(float deltaTime, sf::View &camera, Player &player);
@@ -27,7 +27,7 @@ private:
 
     sf::Vector2f currentDestination;
 
-    Weapon pistol{125.f, 2.f, 20};
+    Weapon<Bullet> pistol{125.f, 2.f, 20};
 
     int health = 50;
     int defense = 5;

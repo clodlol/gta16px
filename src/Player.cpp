@@ -4,9 +4,9 @@
 #include "Player.h"
 #include "InputManager.h"
 
-#define TILE_SIZE 59
+#define TILE_SIZE_PLAYER 59
 
-sf::FloatRect Player::GetBounds()
+sf::FloatRect Player::GetBounds() const
 {
     return playerSprite.getGlobalBounds();
 }
@@ -15,14 +15,28 @@ Player::Player() : playerTexture{}, playerSprite{playerTexture}
 {
 }
 
-const sf::Sprite &Player::GetSprite()
+const sf::Sprite &Player::GetSprite() const
 {
     return playerSprite;
 }
 
 void Player::TakeDamage(int sourceDamage)
 {
-    health -= (sourceDamage - sourceDamage * (defense / 100));
+    if (immunityTimer <= 0.f && alive)
+    {
+        int damageTaken = sourceDamage - float(sourceDamage * defense / 100.f);
+
+        health -= damageTaken;
+
+        std::cout << "Player took " << damageTaken << " damage, current health: " << health << "\n";
+
+        immunityTimer = immunityTime;
+    }
+
+    if (health <= 0)
+    {
+        alive = false;
+    }
 }
 
 void Player::Load()
@@ -33,38 +47,45 @@ void Player::Load()
         return;
     }
 
-    playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE, TILE_SIZE}));
+    playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_PLAYER, TILE_SIZE_PLAYER}));
 
     playerSprite.setPosition({1000.f, 1000.f});
-    playerSprite.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
-    playerSprite.setScale({16.f / TILE_SIZE, 16.f / TILE_SIZE});
+    playerSprite.setOrigin({TILE_SIZE_PLAYER / 2, TILE_SIZE_PLAYER / 2});
+    playerSprite.setScale({16.f / TILE_SIZE_PLAYER, 16.f / TILE_SIZE_PLAYER});
 
-    gun.Load();
+    gun.Load("../assets/bullet.png");
 }
 
 void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
 {
+    immunityTimer -= deltaTime;
+
+    if (!alive)
+    {
+        return;
+    }
+
     sf::Vector2f direction{0.f, 0.f};
 
     if (input.IsActionActive("MoveLeft"))
     {
         direction.x -= 1.f;
-        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 1}, {TILE_SIZE, TILE_SIZE}));
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE_PLAYER * 1}, {TILE_SIZE_PLAYER, TILE_SIZE_PLAYER}));
     }
     if (input.IsActionActive("MoveRight"))
     {
         direction.x += 1.f;
-        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 2}, {TILE_SIZE, TILE_SIZE}));
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE_PLAYER * 2}, {TILE_SIZE_PLAYER, TILE_SIZE_PLAYER}));
     }
     if (input.IsActionActive("MoveUp"))
     {
         direction.y -= 1.f;
-        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 3}, {TILE_SIZE, TILE_SIZE}));
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE_PLAYER * 3}, {TILE_SIZE_PLAYER, TILE_SIZE_PLAYER}));
     }
     if (input.IsActionActive("MoveDown"))
     {
         direction.y += 1.f;
-        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE * 0}, {TILE_SIZE, TILE_SIZE}));
+        playerSprite.setTextureRect(sf::IntRect({0, TILE_SIZE_PLAYER * 0}, {TILE_SIZE_PLAYER, TILE_SIZE_PLAYER}));
     }
 
     float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -98,15 +119,18 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
     camera.setCenter(newCamCenter);
 
     if (input.IsActionActive("Fire"))
-        gun.Fire(playerSprite.getPosition(), input.GetMousePosition().angle(), "Player");
+        gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition().angle(), 20});
     else
         gun.StopFire();
 
-    gun.Update(deltaTime, camera);
+    gun.Update(deltaTime);
 }
 
 void Player::Draw(sf::RenderWindow &window)
 {
-    window.draw(playerSprite);
-    gun.Draw(window);
+    if (alive)
+    {
+        window.draw(playerSprite);
+        gun.Draw(window);
+    }
 }

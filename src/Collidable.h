@@ -6,5 +6,6 @@ class Collidable
 {
 public:
     virtual ~Collidable() = default;
-    virtual sf::FloatRect GetBounds() = 0;
+    virtual sf::FloatRect GetBounds() const = 0;
+    virtual const sf::Sprite &GetSprite() const = 0;
 };
