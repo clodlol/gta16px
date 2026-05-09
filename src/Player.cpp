@@ -36,6 +36,7 @@ void Player::TakeDamage(int sourceDamage)
     if (health <= 0)
     {
         alive = false;
+        deathTimer = respawnTime;
     }
 }
 
@@ -62,7 +63,17 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
 
     if (!alive)
     {
-        return;
+        deathTimer -= deltaTime;
+        if (deathTimer <= 0.f)
+        {
+            // respawn and reset wanted level
+            alive = true;
+            health = 100;
+            defense = 10;
+            deathTimer = 0.f;
+        }
+        else
+            return;
     }
 
     sf::Vector2f direction{0.f, 0.f};

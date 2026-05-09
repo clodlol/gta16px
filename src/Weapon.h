@@ -58,10 +58,10 @@ public:
             std::remove_if(projectiles.begin(), projectiles.end(),
                            [&](T &proj)
                            {
-                               if (proj.GetSprite().getPosition().x <= 0 && proj.GetSprite().getPosition().x >= 1600)
+                               if (proj.GetSprite().getPosition().x <= 0 || proj.GetSprite().getPosition().x >= 1600)
                                    return true;
 
-                               if (proj.GetSprite().getPosition().y <= 0 && proj.GetSprite().getPosition().y >= 1600)
+                               if (proj.GetSprite().getPosition().y <= 0 || proj.GetSprite().getPosition().y >= 1600)
                                    return true;
 
                                proj.MoveSprite({cos(proj.GetDirection().asRadians()) * velocity * deltaTime, sin(proj.GetDirection().asRadians()) * velocity * deltaTime});
@@ -102,15 +102,9 @@ public:
         sprite.setPosition(origin);
     }
 
-    sf::FloatRect GetBounds() const override
-    {
-        return sprite.getGlobalBounds();
-    }
+    sf::FloatRect GetBounds() const override { return sprite.getGlobalBounds(); }
 
-    const sf::Sprite &GetSprite() const override
-    {
-        return sprite;
-    }
+    const sf::Sprite &GetSprite() const override { return sprite; }
 
     const sf::Vector2f &GetOrigin() const override { return origin; }
     const sf::Angle &GetDirection() const override { return direction; }

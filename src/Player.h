@@ -31,7 +31,9 @@ private:
     int defense = 10;
     float speed = 50.f;
     float immunityTime = 2.f;
+    float respawnTime = 5.f;
 
     float immunityTimer = immunityTime;
+    float deathTimer = 0.f;
     bool alive = true;
 };
