@@ -13,5 +13,5 @@ public:
     void Draw(sf::RenderWindow &window);
 
 private:
-    int wantedLevel;
+    int wantedLevel = 1;
 };
