@@ -160,10 +160,26 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
     //     }
     // }
 
-    if (input.IsActionActive("Fire"))
-        sword.Swing(*this);
+    if (input.IsActionActive("Fire") && !sword.IsSwinging())
+        sword.Swing(*this, input.GetMousePosition().angle());
 
     sword.Update(deltaTime, *this);
+
+    for (Officer *&officer : spawner.GetOfficers())
+    {
+        if (officer->GetBounds().findIntersection(sword.GetBounds()))
+        {
+            officer->TakeDamage(sword.GetDamage());
+        }
+    }
+
+    for (Tank *&tank : spawner.GetTanks())
+    {
+        if (tank->GetBounds().findIntersection(sword.GetBounds()))
+        {
+            tank->TakeDamage(sword.GetDamage());
+        }
+    }
 }
 
 void Player::Draw(sf::RenderWindow &window)

@@ -45,7 +45,7 @@ private:
     int bulletDamage = 20;
 
     // Gun<Bullet> gun{gunVelocity, gunFireRate, gunDamage};
-    Melee sword{1.f, 20};
+    Melee sword{10.f, 1.f, 20};
 
     // PLAYER STATS
     int health = 50;

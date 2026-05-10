@@ -14,23 +14,25 @@ class Player;
 class Melee : Collidable
 {
 public:
-    Melee(float rate, int dmg) : meleeTexture{}, meleeSprite{meleeTexture}, swingRate(rate), damage(dmg)
+    Melee(float speed, float rate, int dmg) : meleeTexture{}, meleeSprite{meleeTexture}, damage(dmg), swingSpeed(speed)
     {
-        angleSwung = -PI / 2;
-        cooldownTimer = 1.f / swingRate;
+        angleSwung = -PI / 2.f;
     }
 
     sf::FloatRect GetBounds() const override { return meleeSprite.getGlobalBounds(); }
     const sf::Sprite &GetSprite() const override { return meleeSprite; }
 
-    void Swing(const Collidable &player)
+    void Swing(const Collidable &player, sf::Angle dir)
     {
-        angleSwung = -PI / 2;
+
+        direction = dir;
+
+        angleSwung = direction.asRadians() - PI / 2.f; // start pi/4 behind current direction
         meleeSprite.setPosition({player.GetSprite().getPosition().x, player.GetSprite().getPosition().y + player.GetBounds().size.y / 2});
         swinging = true;
     }
 
-    const sf::Texture &GetTexture() const { return meleeTexture; }
+    bool IsSwinging() const { return swinging; }
     int GetDamage() const { return damage; }
 
     void Load()
@@ -51,16 +53,17 @@ public:
     {
         if (swinging)
         {
-            angleSwung += (deltaTime * 10);
-            if (angleSwung >= PI / 2)
+            angleSwung += (deltaTime * swingSpeed);
+            if (angleSwung >= direction.asRadians() + PI / 2.f)
             {
-                if (swinging)
-                    swinging = false;
+                swinging = false;
 
-                angleSwung = -PI / 2;
+                angleSwung = direction.asRadians() - PI / 2.f;
             }
 
-            meleeSprite.setPosition({player.GetSprite().getPosition().x + 16.f * cos(angleSwung) * deltaTime, player.GetSprite().getPosition().y + 16.f * sin(angleSwung) * deltaTime});
+            meleeSprite.setRotation(sf::radians(angleSwung));
+
+            meleeSprite.setPosition({player.GetSprite().getPosition().x + 4.f * cos(angleSwung), player.GetSprite().getPosition().y + 4.f * sin(angleSwung)});
         }
     }
 
@@ -76,10 +79,11 @@ private:
     sf::Texture meleeTexture{};
     sf::Sprite meleeSprite;
 
-    float swingRate = 1.f; // swings per second
-    int damage = 0;
+    sf::Angle direction{};
+
+    float swingSpeed = 20.f;
+    int damage = 50;
 
     bool swinging = false;
     float angleSwung;
-    float cooldownTimer;
 };
