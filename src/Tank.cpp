@@ -11,6 +11,7 @@ Tank::Tank(const sf::Vector2f &spwnPos) : tankTexture{}, tankSprite{tankTexture}
 {
     immunityTimer = immunityTime;
     moveTimer = moveCooldown;
+    health = maxHealth;
 }
 
 sf::FloatRect Tank::GetBounds() const
@@ -29,8 +30,17 @@ void Tank::TakeDamage(int sourceDamage)
 {
     if (immunityTimer <= 0.f && alive)
     {
-        health -= (sourceDamage - sourceDamage * (defense / 100));
-        immunityTimer = immunityTime;
+        int damageTaken = (sourceDamage - sourceDamage * float(defense / 100.f));
+        health -= damageTaken;
+
+        if (damageTaken > 10)
+        {
+            immunityTimer = immunityTime;
+        }
+        else
+        {
+            immunityTimer = 0.05f;
+        }
     }
 
     if (health <= 0)
@@ -115,5 +125,10 @@ void Tank::Draw(sf::RenderWindow &window)
     {
         heavyCannon.Draw(window);
         window.draw(tankSprite);
+
+        sf::RectangleShape healthBar({(10.f * float(float(health) / maxHealth)), 2.5f});
+        healthBar.setPosition({tankSprite.getPosition().x, tankSprite.getPosition().y});
+        healthBar.setFillColor(sf::Color(255, 255, 255));
+        window.draw(healthBar);
     }
 }

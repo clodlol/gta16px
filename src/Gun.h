@@ -11,27 +11,10 @@
 
 #include <SFML/Graphics.hpp>
 
-// Every Bullet is collidable, every bullet has its own damage and velocity(in addition to damage and velocity provided by the gun)
-class BaseBullet : public Collidable
-{
-public:
-    virtual ~BaseBullet() = default;
-
-    const sf::Vector2f &GetOrigin() const { return origin; }
-    const sf::Vector2f &GetDirection() const { return direction; }
-
-    virtual int GetDamage() const = 0;
-    virtual float GetVelocity() const = 0;
-
-protected:
-    sf::Vector2f origin{1.f, 1.f};
-    sf::Vector2f direction{1.f, 1.f};
-};
-
 template <typename T>
 class Gun
 {
-    static_assert(std::is_base_of<BaseBullet, T>::value, "Gun.h: T must inherit from BaseBullet");
+    static_assert(std::is_base_of<Collidable, T>::value, "Gun.h: T must inherit from BaseBullet");
 
 public:
     Gun(float vel, float rate, int dmg) : velocity(vel), fireRate(rate), damage(dmg)
@@ -53,7 +36,6 @@ public:
     const std::vector<T> &GetProjectiles() const { return projectiles; }
     const sf::Texture &GetProjectileTexture() const { return projectileTexture; }
     int GetDamage() const { return damage; }
-    float GetVelocity() const { return velocity; }
 
     void Load(std::filesystem::path filePath)
     {
@@ -84,13 +66,7 @@ public:
             std::remove_if(projectiles.begin(), projectiles.end(),
                            [](T &proj)
                            {
-                               if (proj.GetSprite().getPosition().x <= 0 || proj.GetSprite().getPosition().x >= 1600)
-                                   return true;
-
-                               if (proj.GetSprite().getPosition().y <= 0 || proj.GetSprite().getPosition().y >= 1600)
-                                   return true;
-
-                               return false;
+                               return proj.IsExpired();
                            }),
             projectiles.end());
     }
@@ -114,14 +90,11 @@ private:
     float cooldownTimer = 1 / fireRate;
 };
 
-class Bullet : public BaseBullet
+class Bullet : public Collidable
 {
 public:
-    Bullet(const sf::Texture &tex, const sf::Vector2f &ogn, const sf::Vector2f &dir, int dmg, float vel) : sprite(tex), damage(dmg), velocity(vel)
+    Bullet(const sf::Texture &tex, const sf::Vector2f &ogn, const sf::Vector2f &dir, int dmg, float vel) : sprite(tex), damage(dmg), velocity(vel), origin(ogn), direction(dir)
     {
-        origin = ogn;
-        direction = dir;
-
         sprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_BULLET, TILE_SIZE_BULLET}));
         sprite.setOrigin({TILE_SIZE_BULLET / 2, TILE_SIZE_BULLET / 2});
         sprite.scale({8.f / TILE_SIZE_BULLET, 8.f / TILE_SIZE_BULLET});
@@ -132,13 +105,30 @@ public:
     sf::FloatRect GetBounds() const override { return sprite.getGlobalBounds(); }
     const sf::Sprite &GetSprite() const override { return sprite; }
 
-    int GetDamage() const override { return damage; }
-    float GetVelocity() const override { return velocity; }
+    const sf::Vector2f &GetOrigin() const { return origin; }
+    const sf::Vector2f &GetDirection() const { return direction; }
+
+    int GetDamage() const { return damage; }
+    float GetVelocity() const { return velocity; }
+
+    bool IsExpired() const
+    {
+        if ((sprite.getPosition().x <= 0 || sprite.getPosition().x >= 1600))
+            return true;
+
+        if (sprite.getPosition().y <= 0 || sprite.getPosition().y >= 1600)
+            return true;
+
+        return false;
+    }
 
     friend class Gun<Bullet>;
 
 private:
     sf::Sprite sprite;
+
+    sf::Vector2f origin{1.f, 1.f};
+    sf::Vector2f direction{1.f, 1.f};
 
     int damage;
     float velocity;

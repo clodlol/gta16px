@@ -11,6 +11,7 @@ Officer::Officer(const sf::Vector2f &spwnPos) : officerTexture{}, officerSprite{
 {
     moveTimer = moveCooldown;
     immunityTimer = immunityTime;
+    health = maxHealth;
 }
 
 sf::FloatRect Officer::GetBounds() const
@@ -29,8 +30,18 @@ void Officer::TakeDamage(int sourceDamage)
 {
     if (immunityTimer <= 0.f && alive)
     {
-        health -= (sourceDamage - sourceDamage * (defense / 100));
-        immunityTimer = immunityTime;
+        int damageTaken = (sourceDamage - sourceDamage * float(defense / 100.f));
+        health -= damageTaken;
+
+        // only give immunity frames if damage taken is greater than 10
+        if (damageTaken > 10)
+        {
+            immunityTimer = immunityTime;
+        }
+        else
+        {
+            immunityTimer = 0.05f;
+        }
     }
 
     if (health <= 0)
@@ -110,5 +121,10 @@ void Officer::Draw(sf::RenderWindow &window)
     {
         pistol.Draw(window);
         window.draw(officerSprite);
+
+        sf::RectangleShape healthBar({(10.f * float(float(health) / maxHealth)), 2.5f});
+        healthBar.setPosition({officerSprite.getPosition().x, officerSprite.getPosition().y});
+        healthBar.setFillColor(sf::Color(255, 255, 255));
+        window.draw(healthBar);
     }
 }

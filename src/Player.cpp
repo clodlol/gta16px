@@ -60,7 +60,8 @@ void Player::Load()
     playerSprite.setScale({16.f / TILE_SIZE_PLAYER, 16.f / TILE_SIZE_PLAYER});
 
     // gun.Load("../assets/bullet.png");
-    sword.Load();
+    // sword.Load();
+    flamethrower.Load();
 }
 
 void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobSpawner &spawner)
@@ -160,24 +161,50 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
     //     }
     // }
 
-    if (input.IsActionActive("Fire") && !sword.IsSwinging())
-        sword.Swing(*this, input.GetMousePosition().angle());
+    // if (input.IsActionActive("Fire") && !sword.IsSwinging())
+    //     sword.Swing(*this, input.GetMousePosition().angle());
 
-    sword.Update(deltaTime, *this);
+    // sword.Update(deltaTime, *this);
 
-    for (Officer *&officer : spawner.GetOfficers())
+    // for (Officer *&officer : spawner.GetOfficers())
+    // {
+    //     if (officer->GetBounds().findIntersection(sword.GetBounds()))
+    //     {
+    //         officer->TakeDamage(sword.GetDamage());
+    //     }
+    // }
+
+    // for (Tank *&tank : spawner.GetTanks())
+    // {
+    //     if (tank->GetBounds().findIntersection(sword.GetBounds()))
+    //     {
+    //         tank->TakeDamage(sword.GetDamage());
+    //     }
+    // }
+
+    if (input.IsActionActive("Fire"))
+        flamethrower.Fire(FlameProjectile{flamethrower.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), flameDamage, flameVeocity, flameMaxDistance});
+    else
+        flamethrower.StopFire();
+
+    flamethrower.Update(deltaTime);
+
+    for (const FlameProjectile &proj : flamethrower.GetProjectiles())
     {
-        if (officer->GetBounds().findIntersection(sword.GetBounds()))
+        for (Officer *&officer : spawner.GetOfficers())
         {
-            officer->TakeDamage(sword.GetDamage());
+            if (officer->GetBounds().findIntersection(proj.GetBounds()))
+            {
+                officer->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
+            }
         }
-    }
 
-    for (Tank *&tank : spawner.GetTanks())
-    {
-        if (tank->GetBounds().findIntersection(sword.GetBounds()))
+        for (Tank *&tank : spawner.GetTanks())
         {
-            tank->TakeDamage(sword.GetDamage());
+            if (tank->GetBounds().findIntersection(proj.GetBounds()))
+            {
+                tank->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
+            }
         }
     }
 }
@@ -188,6 +215,7 @@ void Player::Draw(sf::RenderWindow &window)
     {
         window.draw(playerSprite);
         // gun.Draw(window);
-        sword.Draw(window);
+        // sword.Draw(window);
+        flamethrower.Draw(window);
     }
 }

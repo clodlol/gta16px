@@ -42,13 +42,14 @@ private:
     Gun<Bullet> pistol{pistolVelocity, pistolFireRate, pistolDamage};
 
     // STATS
-    int health = 50;
+    int maxHealth = 50;
     int defense = 5;
     float speed = 40.f;
     bool alive = true;
     float moveCooldown = 5.f;
     float immunityTime = 0.5f;
 
+    int health;
     float moveTimer;
     float immunityTimer;
     bool moving = false;

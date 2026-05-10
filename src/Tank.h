@@ -42,7 +42,7 @@ private:
     Gun<Bullet> heavyCannon{cannonVelocity, cannonFireRate, cannonDamage};
 
     // STATS
-    int health = 300;
+    int maxHealth = 300;
     int defense = 30;
     float speed = 15.f;
     float aggro = 0.5f; // Aggro is a float between 0 and 1 and determines how close(aggro high) or how far(aggro low) the tank tends to be to the player
@@ -50,6 +50,7 @@ private:
     float moveCooldown = 2.f;
     float immunityTime = 0.5f;
 
+    int health = 300;
     float moveTimer;
     float immunityTimer;
     bool moving = false;

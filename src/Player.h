@@ -10,6 +10,7 @@
 #include "Officer.h"
 #include "Tank.h"
 #include "Melee.h"
+#include "FlameGun.h"
 
 class MobSpawner; // resolving circular dependency
 class Officer;
@@ -37,15 +38,19 @@ private:
     sf::Vector2f spawnLocation;
 
     // WEAPON AND AMMO STATS
-    float gunVelocity = 150.f;
-    float gunFireRate = 5.f;
-    int gunDamage = 20;
+    float throwerVelocity = 25.f;
+    float throwerFireRate = 500.f;
+    int throwerIntensity = 10;
+    float throwerSpread = 0.8;
+    int throwerDamage = 1;
 
-    float bulletVelocity = 100.f;
-    int bulletDamage = 20;
+    float flameVeocity = 25.f;
+    int flameDamage = 1;
+    float flameMaxDistance = 50.f;
 
     // Gun<Bullet> gun{gunVelocity, gunFireRate, gunDamage};
-    Melee sword{10.f, 1.f, 20};
+    // Melee sword{10.f, 1.f, 20};
+    FlameGun flamethrower{throwerVelocity, throwerFireRate, throwerDamage, throwerIntensity, throwerSpread};
 
     // PLAYER STATS
     int health = 50;

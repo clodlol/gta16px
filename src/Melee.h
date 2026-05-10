@@ -24,11 +24,10 @@ public:
 
     void Swing(const Collidable &player, sf::Angle dir)
     {
-
         direction = dir;
 
         angleSwung = direction.asRadians() - PI / 2.f; // start pi/4 behind current direction
-        meleeSprite.setPosition({player.GetSprite().getPosition().x, player.GetSprite().getPosition().y + player.GetBounds().size.y / 2});
+        meleeSprite.setPosition({player.GetSprite().getPosition().x, player.GetSprite().getPosition().y});
         swinging = true;
     }
 
@@ -81,7 +80,7 @@ private:
 
     sf::Angle direction{};
 
-    float swingSpeed = 20.f;
+    float swingSpeed = 10.f;
     int damage = 50;
 
     bool swinging = false;
