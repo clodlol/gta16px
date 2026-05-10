@@ -53,6 +53,9 @@ void Tank::Load()
 
 void Tank::Update(float deltaTime, sf::View &camera, Player &player)
 {
+    if (alive)
+        return;
+
     moveTimer -= deltaTime;
 
     if (moveTimer <= 0.f && !moving)
@@ -100,6 +103,9 @@ void Tank::Update(float deltaTime, sf::View &camera, Player &player)
 
 void Tank::Draw(sf::RenderWindow &window)
 {
-    heavyCannon.Draw(window);
-    window.draw(tankSprite);
+    if (alive)
+    {
+        heavyCannon.Draw(window);
+        window.draw(tankSprite);
+    }
 }

@@ -6,8 +6,10 @@
 
 #define TILE_SIZE_PLAYER 59
 
-Player::Player() : playerTexture{}, playerSprite{playerTexture}
+Player::Player(const sf::Vector2f &spwnPos) : playerTexture{}, playerSprite{playerTexture}, spawnLocation{spwnPos}
 {
+    immunityTimer = 0.f; // Player starts with 0 immunity until he gets shot
+    deathTimer = respawnTime;
 }
 
 sf::FloatRect Player::GetBounds() const
@@ -69,8 +71,8 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
             // respawn and reset wanted level
             alive = true;
             health = 100;
-            defense = 10;
-            deathTimer = 0.f;
+            defense = 50;
+            deathTimer = respawnTime;
         }
         else
             return;
@@ -130,7 +132,7 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
     camera.setCenter(newCamCenter);
 
     if (input.IsActionActive("Fire"))
-        gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), 20, 50.f});
+        gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), bulletDamage, bulletVelocity});
     else
         gun.StopFire();
 

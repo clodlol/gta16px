@@ -10,7 +10,7 @@
 class Player : public Collidable
 {
 public:
-    Player();
+    Player(const sf::Vector2f &spwnPos = {1000.f, 1000.f});
 
     sf::FloatRect GetBounds() const override;
     const sf::Sprite &GetSprite() const override;
@@ -25,15 +25,26 @@ private:
     sf::Texture playerTexture;
     sf::Sprite playerSprite;
 
-    Gun<Bullet> gun{150.f, 5.f, 20};
+    sf::Vector2f spawnLocation;
 
+    // WEAPON AND AMMO STATS
+    float gunVelocity = 150.f;
+    float gunFireRate = 5.f;
+    int gunDamage = 20;
+
+    float bulletVelocity = 100.f;
+    int bulletDamage = 20;
+
+    Gun<Bullet> gun{gunVelocity, gunFireRate, gunDamage};
+
+    // PLAYER STATS
     int health = 100;
-    int defense = 10;
+    int defense = 50;
     float speed = 50.f;
     float immunityTime = 2.f;
     float respawnTime = 5.f;
 
-    float immunityTimer = immunityTime;
-    float deathTimer = 0.f;
+    float immunityTimer;
+    float deathTimer;
     bool alive = true;
 };

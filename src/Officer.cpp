@@ -52,6 +52,9 @@ void Officer::Load()
 
 void Officer::Update(float deltaTime, sf::View &camera, Player &player)
 {
+    if (!alive)
+        return;
+
     moveTimer -= deltaTime;
 
     if (moveTimer <= 0.f && !moving)
@@ -95,6 +98,9 @@ void Officer::Update(float deltaTime, sf::View &camera, Player &player)
 
 void Officer::Draw(sf::RenderWindow &window)
 {
-    pistol.Draw(window);
-    window.draw(officerSprite);
+    if (alive)
+    {
+        pistol.Draw(window);
+        window.draw(officerSprite);
+    }
 }
