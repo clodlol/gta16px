@@ -6,13 +6,13 @@
 
 #define TILE_SIZE_PLAYER 59
 
+Player::Player() : playerTexture{}, playerSprite{playerTexture}
+{
+}
+
 sf::FloatRect Player::GetBounds() const
 {
     return playerSprite.getGlobalBounds();
-}
-
-Player::Player() : playerTexture{}, playerSprite{playerTexture}
-{
 }
 
 const sf::Sprite &Player::GetSprite() const
@@ -130,7 +130,7 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
     camera.setCenter(newCamCenter);
 
     if (input.IsActionActive("Fire"))
-        gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition().angle(), 20});
+        gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), 20, 50.f});
     else
         gun.StopFire();
 

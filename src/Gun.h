@@ -5,17 +5,36 @@
 #include <type_traits>
 
 #include "InputManager.h"
-#include "Projectile.h"
+#include "Collidable.h"
 
 #define TILE_SIZE_BULLET 225
 
-template <typename T>
-class Weapon
+#include <SFML/Graphics.hpp>
+
+// Every Bullet is collidable, every bullet has its own damage and velocity(in addition to damage and velocity provided by the gun)
+class BaseBullet : public Collidable
 {
-    static_assert(std::is_base_of<Projectile, T>::value, "T must inherit from Projectile");
+public:
+    virtual ~BaseBullet() = default;
+
+    const sf::Vector2f &GetOrigin() const { return origin; }
+    const sf::Vector2f &GetDirection() const { return direction; }
+
+    virtual int GetDamage() const = 0;
+    virtual float GetVelocity() const = 0;
+
+protected:
+    sf::Vector2f origin{1.f, 1.f};
+    sf::Vector2f direction{1.f, 1.f};
+};
+
+template <typename T>
+class Gun
+{
+    static_assert(std::is_base_of<BaseBullet, T>::value, "Gun.h: T must inherit from BaseBullet");
 
 public:
-    Weapon(float vel, float rate, int dmg) : velocity{vel}, fireRate{rate}, damage{dmg}
+    Gun(float vel, float rate, int dmg) : velocity(vel), fireRate(rate), damage(dmg)
     {
         cooldownTimer = 1.f / fireRate;
     }
@@ -33,12 +52,14 @@ public:
 
     const std::vector<T> &GetProjectiles() const { return projectiles; }
     const sf::Texture &GetProjectileTexture() const { return projectileTexture; }
+    int GetDamage() const { return damage; }
+    float GetVelocity() const { return velocity; }
 
     void Load(std::filesystem::path filePath)
     {
         if (!projectileTexture.loadFromFile(filePath))
         {
-            std::cout << "Failed to load texture located at " << filePath << "\n";
+            std::cout << "Gun.Load: Failed to load texture located at " << filePath << "\n";
             return;
         }
     }
@@ -64,7 +85,7 @@ public:
                                if (proj.GetSprite().getPosition().y <= 0 || proj.GetSprite().getPosition().y >= 1600)
                                    return true;
 
-                               proj.MoveSprite({cos(proj.GetDirection().asRadians()) * velocity * deltaTime, sin(proj.GetDirection().asRadians()) * velocity * deltaTime});
+                               proj.sprite.move({cos(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime, sin(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime});
 
                                return false;
                            }),
@@ -78,8 +99,8 @@ public:
     }
 
 private:
-    sf::Texture projectileTexture;
-    T currentProjectile{projectileTexture, sf::Vector2f{0, 0}, sf::Angle{}, damage};
+    sf::Texture projectileTexture{};
+    T currentProjectile{projectileTexture, sf::Vector2f{1.f, 1.f}, sf::Vector2f{1.f, 1.f}, 0, 1.f};
     std::vector<T> projectiles;
 
     float velocity = 1.f;
@@ -90,38 +111,32 @@ private:
     float cooldownTimer = 1 / fireRate;
 };
 
-class Bullet : public Projectile
+class Bullet : public BaseBullet
 {
 public:
-    Bullet(const sf::Texture &tex, const sf::Vector2f &ogn, const sf::Angle &dir, int dmg) : sprite(tex), origin(ogn), direction(dir), damage(dmg)
+    Bullet(const sf::Texture &tex, const sf::Vector2f &ogn, const sf::Vector2f &dir, int dmg, float vel) : sprite(tex), damage(dmg), velocity(vel)
     {
+        origin = ogn;
+        direction = dir;
+
         sprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_BULLET, TILE_SIZE_BULLET}));
         sprite.setOrigin({TILE_SIZE_BULLET / 2, TILE_SIZE_BULLET / 2});
         sprite.scale({8.f / TILE_SIZE_BULLET, 8.f / TILE_SIZE_BULLET});
-        sprite.rotate(direction);
+        sprite.rotate(direction.angle());
         sprite.setPosition(origin);
     }
 
     sf::FloatRect GetBounds() const override { return sprite.getGlobalBounds(); }
-
     const sf::Sprite &GetSprite() const override { return sprite; }
 
-    const sf::Vector2f &GetOrigin() const override { return origin; }
-    const sf::Angle &GetDirection() const override { return direction; }
     int GetDamage() const override { return damage; }
+    float GetVelocity() const override { return velocity; }
 
-    void MoveSprite(const sf::Vector2f &difference)
-    {
-        sprite.move(difference);
-    }
-
-    friend class Weapon<Bullet>;
+    friend class Gun<Bullet>;
 
 private:
     sf::Sprite sprite;
 
-    sf::Vector2f origin;
-    sf::Angle direction;
-
     int damage;
+    float velocity;
 };

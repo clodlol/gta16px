@@ -76,7 +76,7 @@ void Officer::Update(float deltaTime, sf::View &camera, Player &player)
 
     if (!moving)
     {
-        pistol.Fire(Bullet{pistol.GetProjectileTexture(), officerSprite.getPosition(), (player.GetSprite().getPosition() - officerSprite.getPosition()).angle(), 20});
+        pistol.Fire(Bullet{pistol.GetProjectileTexture(), officerSprite.getPosition(), (player.GetSprite().getPosition() - officerSprite.getPosition()), 20, 10.f});
     }
 
     pistol.Update(deltaTime);
@@ -85,7 +85,7 @@ void Officer::Update(float deltaTime, sf::View &camera, Player &player)
     {
         if (player.GetBounds().findIntersection(bullet.GetBounds()))
         {
-            player.TakeDamage(bullet.GetDamage());
+            player.TakeDamage(pistol.GetDamage() + bullet.GetDamage());
         }
     }
 }

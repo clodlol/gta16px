@@ -77,7 +77,7 @@ void Tank::Update(float deltaTime, sf::View &camera, Player &player)
 
     if (!moving)
     {
-        heavyCannon.Fire(Bullet{heavyCannon.GetProjectileTexture(), tankSprite.getPosition(), (player.GetSprite().getPosition() - tankSprite.getPosition()).angle(), 50});
+        heavyCannon.Fire(Bullet{heavyCannon.GetProjectileTexture(), tankSprite.getPosition(), (player.GetSprite().getPosition() - tankSprite.getPosition()), 50, 10.f});
     }
 
     heavyCannon.Update(deltaTime);
@@ -86,7 +86,7 @@ void Tank::Update(float deltaTime, sf::View &camera, Player &player)
     {
         if (player.GetBounds().findIntersection(bullet.GetBounds()))
         {
-            player.TakeDamage(bullet.GetDamage());
+            player.TakeDamage(heavyCannon.GetDamage() + bullet.GetDamage());
         }
     }
 }

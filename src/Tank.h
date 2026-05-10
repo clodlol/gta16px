@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-#include "Weapon.h"
+#include "Gun.h"
 #include "Collidable.h"
 #include "Player.h"
 
@@ -27,7 +27,7 @@ private:
 
     sf::Vector2f currentDestination;
 
-    Weapon<Bullet> heavyCannon{250.f, 4.f, 50};
+    Gun<Bullet> heavyCannon{250.f, 4.f, 50};
 
     int health = 300;
     int defense = 30;
