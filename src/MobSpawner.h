@@ -1,6 +1,10 @@
 #pragma once
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
+
+#include "Officer.h"
+#include "Tank.h"
 
 class MobSpawner
 {
@@ -13,5 +17,8 @@ public:
     void Draw(sf::RenderWindow &window);
 
 private:
-    int wantedLevel = 1;
+    int wantedLevel;
+
+    std::vector<Officer> officers;
+    std::vector<Tank> tanks;
 };

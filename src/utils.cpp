@@ -9,3 +9,25 @@ float randomNumGen(float min, float max)
 
     return dis(gen);
 }
+
+std::vector<int> readCsvFile(std::filesystem::path path)
+{
+    std::vector<int> v;
+    std::ifstream fin(path);
+    if (!fin.is_open())
+    {
+        std::cout << "Could not open pickups.csv file\n";
+        return v;
+    }
+    int val;
+
+    while (fin >> val)
+    {
+        v.push_back(val);
+
+        if (fin.peek() == ',')
+            fin.ignore();
+    }
+
+    return v;
+}

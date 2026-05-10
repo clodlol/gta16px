@@ -8,7 +8,7 @@
 
 Player::Player(const sf::Vector2f &spwnPos) : playerTexture{}, playerSprite{playerTexture}, spawnLocation{spwnPos}
 {
-    immunityTimer = 0.f; // Player starts with 0 immunity until he gets shot
+    immunityTimer = immunityTime;
     deathTimer = respawnTime;
 }
 

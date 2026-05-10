@@ -5,7 +5,8 @@
 #include "InputManager.h"
 #include "Player.h"
 #include "MobSpawner.h"
-#include "Tank.h"
+#include "Officer.h"
+#include "LevelManager.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -22,7 +23,8 @@ int main()
     InputManager input;
     Player player;
     MobSpawner spawner;
-    Tank tankUnit;
+    LevelManager lvlManager;
+    // Officer officer;
     sf::View camera(sf::FloatRect({0.f, 0.f}, {200.f, 200.f}));
 
     // Initialize here
@@ -33,7 +35,8 @@ int main()
     map.Load();
     player.Load();
     spawner.Load();
-    tankUnit.Load();
+    lvlManager.Load();
+    // officer.Load();
 
     sf::Clock clock;
 
@@ -52,7 +55,8 @@ int main()
         input.Update(window, camera);
         player.Update(deltaTime, input, camera);
         spawner.Update(deltaTime);
-        tankUnit.Update(deltaTime, camera, player);
+        lvlManager.Update(deltaTime, player);
+        // officer.Update(deltaTime, camera, player);
 
         if (input.IsActionActive("ZoomIn"))
             camera.zoom(0.99f);
@@ -66,7 +70,8 @@ int main()
         map.Draw(window);
         player.Draw(window);
         spawner.Draw(window);
-        tankUnit.Draw(window);
+        lvlManager.Draw(window);
+        // officer.Draw(window);
 
         window.display();
     }
