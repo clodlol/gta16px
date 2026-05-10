@@ -7,7 +7,10 @@
 
 #define TILE_SIZE_TANK 125
 
-Tank::Tank() : tankTexture{}, tankSprite{tankTexture} {}
+Tank::Tank(const sf::Vector2f &spwnPos) : tankTexture{}, tankSprite{tankTexture}, spawnLocation{spwnPos}
+{
+    moveTimer = moveCooldown;
+}
 
 sf::FloatRect Tank::GetBounds() const
 {
@@ -57,8 +60,12 @@ void Tank::Update(float deltaTime, sf::View &camera, Player &player)
         heavyCannon.StopFire();
         moving = true;
 
-        float randomX = randomNumGen(camera.getCenter().x - 200, camera.getCenter().x + 200);
-        float randomY = randomNumGen(camera.getCenter().y - 200, camera.getCenter().y + 200);
+        float deltaRadiusX = (camera.getSize().x / 2.f) * (1.f - aggro);
+        float deltaRadiusY = (camera.getSize().y / 2.f) * (1.f - aggro);
+
+        float randomX = randomNumGen(camera.getCenter().x - deltaRadiusX, camera.getCenter().x + deltaRadiusX);
+        float randomY = randomNumGen(camera.getCenter().y - deltaRadiusY, camera.getCenter().y + deltaRadiusY);
+
         currentDestination = sf::Vector2f{randomX, randomY};
     }
 
@@ -71,13 +78,13 @@ void Tank::Update(float deltaTime, sf::View &camera, Player &player)
         else
         {
             moving = false;
-            moveTimer = 6.f;
+            moveTimer = moveCooldown;
         }
     }
 
     if (!moving)
     {
-        heavyCannon.Fire(Bullet{heavyCannon.GetProjectileTexture(), tankSprite.getPosition(), (player.GetSprite().getPosition() - tankSprite.getPosition()), 50, 10.f});
+        heavyCannon.Fire(Bullet{heavyCannon.GetProjectileTexture(), tankSprite.getPosition(), (player.GetSprite().getPosition() - tankSprite.getPosition()), bulletDamage, bulletVelocity});
     }
 
     heavyCannon.Update(deltaTime);

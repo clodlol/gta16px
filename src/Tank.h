@@ -10,7 +10,7 @@
 class Tank : public Collidable
 {
 public:
-    Tank();
+    Tank(const sf::Vector2f &spwnPos = {900.f, 900.f});
 
     sf::FloatRect GetBounds() const override;
     const sf::Sprite &GetSprite() const override;
@@ -25,15 +25,27 @@ private:
     sf::Texture tankTexture;
     sf::Sprite tankSprite;
 
-    sf::Vector2f currentDestination;
+    sf::Vector2f currentDestination{1.f, 1.f};
+    sf::Vector2f spawnLocation;
 
-    Gun<Bullet> heavyCannon{250.f, 4.f, 50};
+    // WEAPON AND AMMO STATS
+    float cannonVelocity = 200.f;
+    float cannonFireRate = 4.f; // bullets per second
+    int cannonDamage = 40;
 
+    float bulletVelocity = 50.f;
+    int bulletDamage = 10;
+
+    Gun<Bullet> heavyCannon{cannonVelocity, cannonFireRate, cannonDamage};
+
+    // STATS
     int health = 300;
     int defense = 30;
-    float speed = 20.f;
+    float speed = 15.f;
+    float aggro = 0.5f; // Aggro is a float between 0 and 1 and determines how close(aggro high) or how far(aggro low) the tank tends to be to the player
     bool alive = true;
+    float moveCooldown = 2.f;
 
-    float moveTimer = 3.f;
+    float moveTimer;
     bool moving = false;
 };

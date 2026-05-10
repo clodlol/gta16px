@@ -7,7 +7,10 @@
 
 #define TILE_SIZE_OFFICER 110
 
-Officer::Officer() : officerTexture{}, officerSprite{officerTexture} {}
+Officer::Officer(const sf::Vector2f &spwnPos) : officerTexture{}, officerSprite{officerTexture}, spawnLocation{spwnPos}
+{
+    moveTimer = moveCooldown;
+}
 
 sf::FloatRect Officer::GetBounds() const
 {
@@ -39,7 +42,7 @@ void Officer::Load()
 
     officerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_OFFICER, TILE_SIZE_OFFICER}));
 
-    officerSprite.setPosition({900.f, 900.f});
+    officerSprite.setPosition(spawnLocation);
 
     officerSprite.setOrigin({TILE_SIZE_OFFICER / 2, TILE_SIZE_OFFICER / 2});
     officerSprite.setScale({16.f / TILE_SIZE_OFFICER, 16.f / TILE_SIZE_OFFICER});
@@ -70,13 +73,13 @@ void Officer::Update(float deltaTime, sf::View &camera, Player &player)
         else
         {
             moving = false;
-            moveTimer = 5.f;
+            moveTimer = moveCooldown;
         }
     }
 
     if (!moving)
     {
-        pistol.Fire(Bullet{pistol.GetProjectileTexture(), officerSprite.getPosition(), (player.GetSprite().getPosition() - officerSprite.getPosition()), 20, 10.f});
+        pistol.Fire(Bullet{pistol.GetProjectileTexture(), officerSprite.getPosition(), (player.GetSprite().getPosition() - officerSprite.getPosition()), bulletDamage, bulletVelocity});
     }
 
     pistol.Update(deltaTime);
