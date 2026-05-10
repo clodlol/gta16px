@@ -1,13 +1,19 @@
 #pragma once
-#include "Projectile.h"
 
-class AdvancedProjectile : public Projectile {
+class AdvancedProjectile {
 
 public:
     virtual ~AdvancedProjectile() = default;
 
-    virtual void Update(float deltaTime) {}
+    //flames max allowed distance through these
+    virtual float GetDistanceTravelled() const = 0;
+
+    virtual float GetMaxDistance() const = 0;
+
+    virtual float AddDistance(float distance) const = 0;
+
+    //handles the flame expiration
     virtual bool IsExpired() const{
-        return false;
+        return GetDistanceTravelled() >= GetMaxDistance();
     }
 };
