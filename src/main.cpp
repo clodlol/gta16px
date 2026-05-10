@@ -29,12 +29,10 @@ int main()
 
     // Initialize here
     map.Initialize();
-    spawner.Initialize();
 
     // Load here
     map.Load();
     player.Load();
-    spawner.Load();
     lvlManager.Load();
     // officer.Load();
 
@@ -54,7 +52,7 @@ int main()
         // Update here
         input.Update(window, camera);
         player.Update(deltaTime, input, camera);
-        spawner.Update(deltaTime);
+        spawner.Update(deltaTime, lvlManager.GetCurrentWantedLevel());
         lvlManager.Update(deltaTime, player);
         // officer.Update(deltaTime, camera, player);
 

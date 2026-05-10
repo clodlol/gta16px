@@ -22,6 +22,8 @@ const sf::Sprite &Officer::GetSprite() const
     return officerSprite;
 }
 
+bool Officer::IsAlive() const { return alive; }
+
 void Officer::TakeDamage(int sourceDamage)
 {
     health -= (sourceDamage - sourceDamage * (defense / 100));

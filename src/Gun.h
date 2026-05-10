@@ -75,17 +75,20 @@ public:
             projectiles.push_back(currentProjectile);
         }
 
+        for (T &proj : projectiles)
+        {
+            proj.sprite.move({cos(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime, sin(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime});
+        }
+
         projectiles.erase(
             std::remove_if(projectiles.begin(), projectiles.end(),
-                           [&](T &proj)
+                           [](T &proj)
                            {
                                if (proj.GetSprite().getPosition().x <= 0 || proj.GetSprite().getPosition().x >= 1600)
                                    return true;
 
                                if (proj.GetSprite().getPosition().y <= 0 || proj.GetSprite().getPosition().y >= 1600)
                                    return true;
-
-                               proj.sprite.move({cos(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime, sin(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime});
 
                                return false;
                            }),

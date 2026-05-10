@@ -22,6 +22,8 @@ const sf::Sprite &Tank::GetSprite() const
     return tankSprite;
 }
 
+bool Tank::IsAlive() const { return alive; }
+
 void Tank::TakeDamage(int sourceDamage)
 {
     health -= (sourceDamage - sourceDamage * (defense / 100));

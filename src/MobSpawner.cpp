@@ -1,17 +1,10 @@
 #include "MobSpawner.h"
 
-MobSpawner::MobSpawner() : wantedLevel{0} {}
-
-void MobSpawner::Initialize()
+void MobSpawner::Update(float deltaTime, int wantedLevel)
 {
-}
-
-void MobSpawner::Load()
-{
-}
-
-void MobSpawner::Update(float deltaTime)
-{
+    officers.erase(std::remove_if(officers.begin(), officers.end(), [](Officer &officer)
+                                  { return !officer.IsAlive(); }),
+                   officers.end());
 }
 
 void MobSpawner::Draw(sf::RenderWindow &window)

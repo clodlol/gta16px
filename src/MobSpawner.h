@@ -9,16 +9,10 @@
 class MobSpawner
 {
 public:
-    MobSpawner();
-
-    void Initialize();
-    void Load();
-    void Update(float deltaTime);
+    void Update(float deltaTime, int wantedLevel);
     void Draw(sf::RenderWindow &window);
 
 private:
-    int wantedLevel;
-
     std::vector<Officer> officers;
     std::vector<Tank> tanks;
 };

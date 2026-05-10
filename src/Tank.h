@@ -16,6 +16,7 @@ public:
     const sf::Sprite &GetSprite() const override;
 
     void TakeDamage(int sourceDamage);
+    bool IsAlive() const;
 
     void Load();
     void Update(float deltaTime, sf::View &camera, Player &player);
