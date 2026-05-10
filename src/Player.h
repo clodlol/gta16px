@@ -6,6 +6,13 @@
 #include "InputManager.h"
 #include "Gun.h"
 #include "Collidable.h"
+#include "MobSpawner.h"
+#include "Officer.h"
+#include "Tank.h"
+
+class MobSpawner; // resolving circular dependency
+class Officer;
+class Tank;
 
 class Player : public Collidable
 {
@@ -18,7 +25,7 @@ public:
     void TakeDamage(int sourceDamage);
 
     void Load();
-    void Update(float deltaTime, InputManager &input, sf::View &camera);
+    void Update(float deltaTime, InputManager &input, sf::View &camera, MobSpawner &spawner);
     void Draw(sf::RenderWindow &window);
 
 private:
@@ -38,9 +45,9 @@ private:
     Gun<Bullet> gun{gunVelocity, gunFireRate, gunDamage};
 
     // PLAYER STATS
-    int health = 100;
-    int defense = 50;
-    float speed = 50.f;
+    int health = 50;
+    int defense = 100;
+    float speed = 150.f;
     float immunityTime = 2.f;
     float respawnTime = 5.f;
 

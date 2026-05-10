@@ -7,6 +7,8 @@
 #include "Collidable.h"
 #include "Player.h"
 
+class Player;
+
 class Tank : public Collidable
 {
 public:
@@ -46,7 +48,9 @@ private:
     float aggro = 0.5f; // Aggro is a float between 0 and 1 and determines how close(aggro high) or how far(aggro low) the tank tends to be to the player
     bool alive = true;
     float moveCooldown = 2.f;
+    float immunityTime = 0.5f;
 
     float moveTimer;
+    float immunityTimer;
     bool moving = false;
 };

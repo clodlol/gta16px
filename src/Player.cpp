@@ -2,7 +2,9 @@
 #include <SFML/Graphics.hpp>
 
 #include "Player.h"
-#include "InputManager.h"
+#include "MobSpawner.h"
+#include "Officer.h"
+#include "Tank.h"
 
 #define TILE_SIZE_PLAYER 59
 
@@ -59,7 +61,7 @@ void Player::Load()
     gun.Load("../assets/bullet.png");
 }
 
-void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
+void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobSpawner &spawner)
 {
     immunityTimer -= deltaTime;
 
@@ -70,8 +72,7 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
         {
             // respawn and reset wanted level
             alive = true;
-            health = 100;
-            defense = 50;
+            health = INT_MAX;
             deathTimer = respawnTime;
         }
         else
@@ -137,6 +138,25 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera)
         gun.StopFire();
 
     gun.Update(deltaTime);
+
+    for (const Bullet &bullet : gun.GetProjectiles())
+    {
+        for (Officer *&officer : spawner.GetOfficers())
+        {
+            if (officer->GetBounds().findIntersection(bullet.GetBounds()))
+            {
+                officer->TakeDamage(gun.GetDamage() + bullet.GetDamage());
+            }
+        }
+
+        for (Tank *&tank : spawner.GetTanks())
+        {
+            if (tank->GetBounds().findIntersection(bullet.GetBounds()))
+            {
+                tank->TakeDamage(gun.GetDamage() + bullet.GetDamage());
+            }
+        }
+    }
 }
 
 void Player::Draw(sf::RenderWindow &window)

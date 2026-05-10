@@ -7,6 +7,8 @@
 #include "Collidable.h"
 #include "Player.h"
 
+class Player; // resolving circular dependency
+
 class Officer : public Collidable
 {
 public:
@@ -45,7 +47,9 @@ private:
     float speed = 40.f;
     bool alive = true;
     float moveCooldown = 5.f;
+    float immunityTime = 0.5f;
 
     float moveTimer;
+    float immunityTimer;
     bool moving = false;
 };

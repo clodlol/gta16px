@@ -24,7 +24,7 @@ int main()
     Player player;
     MobSpawner spawner;
     LevelManager lvlManager;
-    // Officer officer;
+    // Tank officer;
     sf::View camera(sf::FloatRect({0.f, 0.f}, {200.f, 200.f}));
 
     // Initialize here
@@ -51,9 +51,9 @@ int main()
 
         // Update here
         input.Update(window, camera);
-        player.Update(deltaTime, input, camera);
-        spawner.Update(deltaTime, lvlManager.GetCurrentWantedLevel());
+        player.Update(deltaTime, input, camera, spawner);
         lvlManager.Update(deltaTime, player);
+        spawner.Update(deltaTime, lvlManager.GetCurrentWantedLevel(), camera, player);
         // officer.Update(deltaTime, camera, player);
 
         if (input.IsActionActive("ZoomIn"))

@@ -2,13 +2,14 @@
 #include <iostream>
 
 #include "Tank.h"
-#include "Player.h"
 #include "utils.h"
+#include "Player.h"
 
 #define TILE_SIZE_TANK 125
 
 Tank::Tank(const sf::Vector2f &spwnPos) : tankTexture{}, tankSprite{tankTexture}, spawnLocation{spwnPos}
 {
+    immunityTimer = immunityTime;
     moveTimer = moveCooldown;
 }
 
@@ -26,7 +27,11 @@ bool Tank::IsAlive() const { return alive; }
 
 void Tank::TakeDamage(int sourceDamage)
 {
-    health -= (sourceDamage - sourceDamage * (defense / 100));
+    if (immunityTimer <= 0.f && alive)
+    {
+        health -= (sourceDamage - sourceDamage * (defense / 100));
+        immunityTimer = immunityTime;
+    }
 
     if (health <= 0)
     {
@@ -44,7 +49,7 @@ void Tank::Load()
 
     tankSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_TANK, TILE_SIZE_TANK}));
 
-    tankSprite.setPosition({900.f, 900.f});
+    tankSprite.setPosition(spawnLocation);
 
     tankSprite.setOrigin({TILE_SIZE_TANK / 2, TILE_SIZE_TANK / 2});
 
@@ -55,9 +60,10 @@ void Tank::Load()
 
 void Tank::Update(float deltaTime, sf::View &camera, Player &player)
 {
-    if (alive)
+    if (!alive)
         return;
 
+    immunityTimer -= deltaTime;
     moveTimer -= deltaTime;
 
     if (moveTimer <= 0.f && !moving)

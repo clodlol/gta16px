@@ -56,6 +56,7 @@ void LevelManager::Update(float deltaTime, Player &player)
         {
             upStar.pickedUp = true;
             wantedLevel++;
+            std::cout << "Current wanted level: " << wantedLevel << "\n";
         }
     }
 
@@ -67,6 +68,7 @@ void LevelManager::Update(float deltaTime, Player &player)
             {
                 downStar.pickedUp = true;
                 wantedLevel--;
+                std::cout << "Current wanted level: " << wantedLevel << "\n";
             }
         }
     }
