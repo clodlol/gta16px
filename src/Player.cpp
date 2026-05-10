@@ -5,6 +5,7 @@
 #include "MobSpawner.h"
 #include "Officer.h"
 #include "Tank.h"
+#include "Melee.h"
 
 #define TILE_SIZE_PLAYER 59
 
@@ -58,7 +59,8 @@ void Player::Load()
     playerSprite.setOrigin({TILE_SIZE_PLAYER / 2, TILE_SIZE_PLAYER / 2});
     playerSprite.setScale({16.f / TILE_SIZE_PLAYER, 16.f / TILE_SIZE_PLAYER});
 
-    gun.Load("../assets/bullet.png");
+    // gun.Load("../assets/bullet.png");
+    sword.Load();
 }
 
 void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobSpawner &spawner)
@@ -132,31 +134,36 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
 
     camera.setCenter(newCamCenter);
 
+    // if (input.IsActionActive("Fire"))
+    //     gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), bulletDamage, bulletVelocity});
+    // else
+    //     gun.StopFire();
+
+    // gun.Update(deltaTime);
+
+    // for (const Bullet &bullet : gun.GetProjectiles())
+    // {
+    //     for (Officer *&officer : spawner.GetOfficers())
+    //     {
+    //         if (officer->GetBounds().findIntersection(bullet.GetBounds()))
+    //         {
+    //             officer->TakeDamage(gun.GetDamage() + bullet.GetDamage());
+    //         }
+    //     }
+
+    //     for (Tank *&tank : spawner.GetTanks())
+    //     {
+    //         if (tank->GetBounds().findIntersection(bullet.GetBounds()))
+    //         {
+    //             tank->TakeDamage(gun.GetDamage() + bullet.GetDamage());
+    //         }
+    //     }
+    // }
+
     if (input.IsActionActive("Fire"))
-        gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), bulletDamage, bulletVelocity});
-    else
-        gun.StopFire();
+        sword.Swing(*this);
 
-    gun.Update(deltaTime);
-
-    for (const Bullet &bullet : gun.GetProjectiles())
-    {
-        for (Officer *&officer : spawner.GetOfficers())
-        {
-            if (officer->GetBounds().findIntersection(bullet.GetBounds()))
-            {
-                officer->TakeDamage(gun.GetDamage() + bullet.GetDamage());
-            }
-        }
-
-        for (Tank *&tank : spawner.GetTanks())
-        {
-            if (tank->GetBounds().findIntersection(bullet.GetBounds()))
-            {
-                tank->TakeDamage(gun.GetDamage() + bullet.GetDamage());
-            }
-        }
-    }
+    sword.Update(deltaTime, *this);
 }
 
 void Player::Draw(sf::RenderWindow &window)
@@ -164,6 +171,7 @@ void Player::Draw(sf::RenderWindow &window)
     if (alive)
     {
         window.draw(playerSprite);
-        gun.Draw(window);
+        // gun.Draw(window);
+        sword.Draw(window);
     }
 }

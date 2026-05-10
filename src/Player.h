@@ -9,10 +9,12 @@
 #include "MobSpawner.h"
 #include "Officer.h"
 #include "Tank.h"
+#include "Melee.h"
 
 class MobSpawner; // resolving circular dependency
 class Officer;
 class Tank;
+class Melee;
 
 class Player : public Collidable
 {
@@ -42,7 +44,8 @@ private:
     float bulletVelocity = 100.f;
     int bulletDamage = 20;
 
-    Gun<Bullet> gun{gunVelocity, gunFireRate, gunDamage};
+    // Gun<Bullet> gun{gunVelocity, gunFireRate, gunDamage};
+    Melee sword{1.f, 20};
 
     // PLAYER STATS
     int health = 50;
