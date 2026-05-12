@@ -25,7 +25,7 @@ void LevelManager::Load()
         {
             Pickup currentPickup(upStarTex);
 
-            if (pickups[i * j] == 1)
+            if (pickups[(i * 100) + j] == 1)
             {
                 currentPickup.sprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_UPSTAR, TILE_SIZE_UPSTAR}));
                 currentPickup.sprite.setPosition({float(i * 16), float(j * 16)});
@@ -34,7 +34,7 @@ void LevelManager::Load()
                 upStars.push_back(currentPickup);
             }
 
-            if (pickups[i * j] == 2)
+            if (pickups[(i * 100) + j] == 2)
             {
                 currentPickup.sprite.setTexture(downStarTex, true);
                 currentPickup.sprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_DOWNSTAR, TILE_SIZE_DOWNSTAR}));
