@@ -124,7 +124,7 @@ void Officer::Draw(sf::RenderWindow &window)
         window.draw(officerSprite);
 
         sf::RectangleShape healthBar({(10.f * float(float(health) / maxHealth)), 2.5f});
-        healthBar.setPosition({officerSprite.getPosition().x, officerSprite.getPosition().y});
+        healthBar.setPosition({officerSprite.getPosition().x - 5.f, officerSprite.getPosition().y + 16.f});
         healthBar.setFillColor(sf::Color(255, 255, 255));
         window.draw(healthBar);
     }

@@ -2,17 +2,7 @@
 #include "Player.h"
 #include "Tank.h"
 #include "Officer.h"
-
-sf::Vector2f generateRandomSpawn(const sf::View &camera)
-{
-    float randomSpawnX = randomNumGen(0.f, 1.f) > 0.5f ? ((camera.getCenter().x - camera.getSize().x / 2) - randomNumGen(0.f, 100.f)) : ((camera.getCenter().x + camera.getSize().x / 2) + randomNumGen(0.f, 100.f));
-    float randomSpawnY = randomNumGen(0.f, 1.f) > 0.5f ? ((camera.getCenter().y + camera.getSize().y / 2) + randomNumGen(0.f, 100.f)) : ((camera.getCenter().y - camera.getSize().y / 2) - randomNumGen(0.f, 100.f));
-
-    randomSpawnX = std::clamp(randomSpawnX, 0.f, 1600.f);
-    randomSpawnY = std::clamp(randomSpawnY, 0.f, 1600.f);
-
-    return sf::Vector2f{randomSpawnX, randomSpawnY};
-}
+#include "Boss.h"
 
 MobSpawner::~MobSpawner()
 {
@@ -24,6 +14,11 @@ MobSpawner::~MobSpawner()
     for (Tank *&tank : tanks)
     {
         delete tank;
+    }
+
+    for (Boss *&boss : bosses)
+    {
+        delete boss;
     }
 }
 
@@ -37,10 +32,24 @@ std::vector<Tank *> &MobSpawner::GetTanks()
     return tanks;
 }
 
+std::vector<Boss *> &MobSpawner::GetBosses()
+{
+    return bosses;
+}
+
 void MobSpawner::Update(float deltaTime, int wantedLevel, sf::View &camera, Player &player)
 {
     if (wantedLevel == 0 || wantedLevel == 5 || wantedLevel == 9)
     {
+        if (wantedLevel == 5)
+        {
+            bossesSpawnCount = 1;
+        }
+        else if (wantedLevel == 9)
+        {
+            bossesSpawnCount = 2;
+        }
+
         officersSpawnCount = 0;
         tanksSpawnCount = 0;
     }
@@ -85,6 +94,16 @@ void MobSpawner::Update(float deltaTime, int wantedLevel, sf::View &camera, Play
         return false; }),
                 tanks.end());
 
+    bosses.erase(std::remove_if(bosses.begin(), bosses.end(), [](Boss *&boss)
+                                {
+        if(!boss->IsAlive())
+        {
+            delete boss;
+            return true;
+        } 
+        return false; }),
+                 bosses.end());
+
     int officersToSpawn = officersSpawnCount - officers.size();
     for (int i = 0; i < officersToSpawn; ++i)
     {
@@ -101,6 +120,14 @@ void MobSpawner::Update(float deltaTime, int wantedLevel, sf::View &camera, Play
         newTank->Load();
     }
 
+    int bossesToSpawn = bossesSpawnCount - bosses.size();
+    for (int i = 0; i < bossesToSpawn; ++i)
+    {
+        Boss *newBoss = new Boss({generateRandomSpawn(camera)});
+        bosses.push_back(newBoss);
+        newBoss->Load();
+    }
+
     for (Officer *&officer : officers)
     {
         officer->Update(deltaTime, camera, player);
@@ -109,6 +136,11 @@ void MobSpawner::Update(float deltaTime, int wantedLevel, sf::View &camera, Play
     for (Tank *&tank : tanks)
     {
         tank->Update(deltaTime, camera, player);
+    }
+
+    for (Boss *&boss : bosses)
+    {
+        boss->Update(deltaTime, camera, player);
     }
 }
 
@@ -122,5 +154,10 @@ void MobSpawner::Draw(sf::RenderWindow &window)
     for (Tank *&tank : tanks)
     {
         tank->Draw(window);
+    }
+
+    for (Boss *&boss : bosses)
+    {
+        boss->Draw(window);
     }
 }

@@ -7,10 +7,13 @@
 #include "Tank.h"
 #include "utils.h"
 #include "Player.h"
+#include "Boss.h"
+#include "utils.h"
 
 class Player;
 class Tank;
 class Officer;
+class Boss;
 
 class MobSpawner
 {
@@ -19,6 +22,7 @@ public:
 
     std::vector<Officer *> &GetOfficers();
     std::vector<Tank *> &GetTanks();
+    std::vector<Boss *> &GetBosses();
 
     void Update(float deltaTime, int wantedLevel, sf::View &camera, Player &player);
     void Draw(sf::RenderWindow &window);
@@ -26,7 +30,9 @@ public:
 private:
     int officersSpawnCount = 0;
     int tanksSpawnCount = 0;
+    int bossesSpawnCount = 0;
 
     std::vector<Officer *> officers;
     std::vector<Tank *> tanks;
+    std::vector<Boss *> bosses;
 };

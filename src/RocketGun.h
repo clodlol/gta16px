@@ -7,7 +7,7 @@
 #include "InputManager.h"
 #include "Collidable.h"
 
-#define TILE_SIZE_BULLET 225
+#define TILE_SIZE_ROCKET 260
 
 #include <SFML/Graphics.hpp>
 
@@ -16,10 +16,10 @@ class RocketBullet : public Collidable
 public:
     RocketBullet(const sf::Texture &tex, const sf::Vector2f &ogn, const sf::Vector2f &dir, int dmg, float vel, float expTime, float bRadius, float bTime) : sprite(tex), damage(dmg), velocity(vel), origin(ogn), direction(dir), explosionTime(expTime), blastRadius(bRadius), blastTime(bTime)
     {
-        sprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_BULLET, TILE_SIZE_BULLET}));
-        sprite.setOrigin({TILE_SIZE_BULLET / 2, TILE_SIZE_BULLET / 2});
-        sprite.scale({8.f / TILE_SIZE_BULLET, 8.f / TILE_SIZE_BULLET});
-        sprite.rotate(direction.angle());
+        sprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_ROCKET, TILE_SIZE_ROCKET}));
+        sprite.setOrigin({TILE_SIZE_ROCKET / 2, TILE_SIZE_ROCKET / 2});
+        sprite.scale({8.f / TILE_SIZE_ROCKET, 8.f / TILE_SIZE_ROCKET});
+        sprite.rotate(sf::degrees(direction.angle().asDegrees() + 90)); // special for this asset because bullet facing upwards hai isme
         sprite.setPosition(origin);
 
         explosion.setRadius(0);
@@ -101,9 +101,9 @@ public:
 
     void Load()
     {
-        if (!projectileTexture.loadFromFile("../assets/bullet.png"))
+        if (!projectileTexture.loadFromFile("../assets/rocket.png"))
         {
-            std::cout << "Failed to load rocket bullet texture\n";
+            std::cout << "Failed to load rocket texture\n";
             return;
         }
     }
@@ -154,7 +154,6 @@ public:
                 if (proj.blastTimer / proj.blastTime >= 1)
                 {
                     proj.expired = true;
-                    std::cout << "Rocket expired\n";
                 }
 
                 int alpha = static_cast<int>(255 - 255 * (proj.blastTimer / proj.blastTime));

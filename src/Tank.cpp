@@ -63,7 +63,7 @@ void Tank::Load()
 
     tankSprite.setOrigin({TILE_SIZE_TANK / 2, TILE_SIZE_TANK / 2});
 
-    tankSprite.setScale({16.f / TILE_SIZE_TANK, 16.f / TILE_SIZE_TANK});
+    tankSprite.setScale({20.f / TILE_SIZE_TANK, 20.f / TILE_SIZE_TANK});
 
     heavyCannon.Load();
 }
@@ -128,7 +128,7 @@ void Tank::Draw(sf::RenderWindow &window)
         window.draw(tankSprite);
 
         sf::RectangleShape healthBar({(10.f * float(float(health) / maxHealth)), 2.5f});
-        healthBar.setPosition({tankSprite.getPosition().x, tankSprite.getPosition().y});
+        healthBar.setPosition({tankSprite.getPosition().x - 5.f, tankSprite.getPosition().y + 20.f});
         healthBar.setFillColor(sf::Color(255, 255, 255));
         window.draw(healthBar);
     }

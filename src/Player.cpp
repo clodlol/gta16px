@@ -220,7 +220,6 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
 
     for (RocketBullet &rocket : rocketLauncher.GetProjectiles())
     {
-        std::cout << "Rockets in current loop: " << rocketLauncher.GetProjectiles().size() << "\n";
         for (Officer *&officer : spawner.GetOfficers())
         {
             if (officer->GetBounds().findIntersection(rocket.GetBounds()))
@@ -241,6 +240,18 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
                     rocket.Explode();
 
                 tank->TakeDamage(rocketLauncher.GetDamage() + rocket.GetDamage());
+            }
+        }
+
+        for (Boss *&boss : spawner.GetBosses())
+        {
+
+            if (boss->GetBounds().findIntersection(rocket.GetBounds()))
+            {
+                if (!rocket.IsExploded())
+                    rocket.Explode();
+
+                boss->TakeDamage(rocketLauncher.GetDamage() + rocket.GetDamage());
             }
         }
     }

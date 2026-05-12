@@ -39,14 +39,14 @@ private:
     sf::Vector2f spawnLocation;
 
     // WEAPON AND AMMO STATS
-    float launcherVelocity = 25.f;
-    float launcherFireRate = 1.f;
-    int launcherDamage = 100;
+    float launcherVelocity = 75.f;
+    float launcherFireRate = 2.f;
+    int launcherDamage = 300;
 
     int rocketDamage = 50;
     float rocketVelocity = 25.f;
     float rocketTimeLimit = 2.5f;
-    float rocketBlastRad = 20.f;
+    float rocketBlastRad = 50.f;
     float rocketBlastTime = 1.f;
 
     // Gun<Bullet> gun{gunVelocity, gunFireRate, gunDamage};
@@ -55,8 +55,8 @@ private:
     RocketGun rocketLauncher{launcherVelocity, launcherFireRate, launcherDamage};
 
     // PLAYER STATS
-    int health = 50;
-    int defense = 100;
+    int health = 10000;
+    int defense = 50;
     float speed = 150.f;
     float immunityTime = 2.f;
     float respawnTime = 5.f;
