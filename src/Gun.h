@@ -11,85 +11,6 @@
 
 #include <SFML/Graphics.hpp>
 
-template <typename T>
-class Gun
-{
-    static_assert(std::is_base_of<Collidable, T>::value, "Gun.h: T must inherit from BaseBullet");
-
-public:
-    Gun(float vel, float rate, int dmg) : velocity(vel), fireRate(rate), damage(dmg)
-    {
-        cooldownTimer = 1.f / fireRate;
-    }
-
-    void Fire(const T &projectile)
-    {
-        currentProjectile = projectile;
-        firing = true;
-    }
-
-    void StopFire()
-    {
-        firing = false;
-    }
-
-    const std::vector<T> &GetProjectiles() const { return projectiles; }
-    const sf::Texture &GetProjectileTexture() const { return projectileTexture; }
-    int GetDamage() const { return damage; }
-
-    void Load(std::filesystem::path filePath)
-    {
-        if (!projectileTexture.loadFromFile(filePath))
-        {
-            std::cout << "Gun.Load: Failed to load texture located at " << filePath << "\n";
-            return;
-        }
-    }
-
-    void Update(float deltaTime)
-    {
-        cooldownTimer -= deltaTime;
-
-        if (firing && cooldownTimer <= 0.f)
-        {
-            cooldownTimer = 1 / fireRate;
-
-            projectiles.push_back(currentProjectile);
-        }
-
-        for (T &proj : projectiles)
-        {
-            proj.sprite.move({cos(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime, sin(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime});
-        }
-
-        projectiles.erase(
-            std::remove_if(projectiles.begin(), projectiles.end(),
-                           [](T &proj)
-                           {
-                               return proj.IsExpired();
-                           }),
-            projectiles.end());
-    }
-
-    void Draw(sf::RenderWindow &window)
-    {
-        for (const T &projectile : projectiles)
-            window.draw(projectile.GetSprite());
-    }
-
-private:
-    sf::Texture projectileTexture{};
-    T currentProjectile{projectileTexture, sf::Vector2f{1.f, 1.f}, sf::Vector2f{1.f, 1.f}, 0, 1.f};
-    std::vector<T> projectiles;
-
-    float velocity = 1.f;
-    float fireRate = 1.f; // bullets per second
-    int damage = 0;
-
-    bool firing = false;
-    float cooldownTimer = 1 / fireRate;
-};
-
 class Bullet : public Collidable
 {
 public:
@@ -111,18 +32,14 @@ public:
     int GetDamage() const { return damage; }
     float GetVelocity() const { return velocity; }
 
-    bool IsExpired() const
+    void Erase() { expired = true; }
+
+    bool IsExpired()
     {
-        if ((sprite.getPosition().x <= 0 || sprite.getPosition().x >= 1600))
-            return true;
-
-        if (sprite.getPosition().y <= 0 || sprite.getPosition().y >= 1600)
-            return true;
-
-        return false;
+        return expired;
     }
 
-    friend class Gun<Bullet>;
+    friend class Gun;
 
 private:
     sf::Sprite sprite;
@@ -130,6 +47,91 @@ private:
     sf::Vector2f origin{1.f, 1.f};
     sf::Vector2f direction{1.f, 1.f};
 
+    bool expired = false;
+
     int damage;
     float velocity;
+};
+
+class Gun
+{
+
+public:
+    Gun(float vel, float rate, int dmg) : velocity(vel), fireRate(rate), damage(dmg)
+    {
+        cooldownTimer = 1.f / fireRate;
+    }
+
+    void Fire(const Bullet &projectile)
+    {
+        currentProjectile = projectile;
+        firing = true;
+    }
+
+    void StopFire()
+    {
+        firing = false;
+    }
+
+    std::vector<Bullet> &GetProjectiles() { return projectiles; }
+    const sf::Texture &GetProjectileTexture() const { return projectileTexture; }
+    int GetDamage() const { return damage; }
+
+    void Load()
+    {
+        if (!projectileTexture.loadFromFile("../assets/bullet.png"))
+        {
+            std::cout << "Failed to load bullet texture\n";
+            return;
+        }
+    }
+
+    void Update(float deltaTime)
+    {
+        cooldownTimer -= deltaTime;
+
+        if (firing && cooldownTimer <= 0.f)
+        {
+            cooldownTimer = 1 / fireRate;
+
+            projectiles.push_back(currentProjectile);
+        }
+
+        for (Bullet &proj : projectiles)
+        {
+            proj.sprite.move({cos(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime, sin(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime});
+
+            if ((proj.sprite.getPosition().x <= 0 || proj.sprite.getPosition().x >= 1600))
+                proj.expired = true;
+
+            if (proj.sprite.getPosition().y <= 0 || proj.sprite.getPosition().y >= 1600)
+                proj.expired = true;
+        }
+
+        projectiles.erase(
+            std::remove_if(projectiles.begin(), projectiles.end(),
+                           [](Bullet &proj)
+                           {
+                               return proj.IsExpired();
+                           }),
+            projectiles.end());
+    }
+
+    void Draw(sf::RenderWindow &window)
+    {
+        for (const Bullet &projectile : projectiles)
+            window.draw(projectile.GetSprite());
+    }
+
+private:
+    sf::Texture projectileTexture{};
+    Bullet currentProjectile{projectileTexture, sf::Vector2f{1.f, 1.f}, sf::Vector2f{1.f, 1.f}, 0, 1.f};
+    std::vector<Bullet> projectiles;
+
+    float velocity = 1.f;
+    float fireRate = 1.f; // bullets per second
+    int damage = 0;
+
+    bool firing = false;
+    float cooldownTimer = 1 / fireRate;
 };

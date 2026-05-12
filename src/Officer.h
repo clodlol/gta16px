@@ -39,7 +39,7 @@ private:
     float bulletVelocity = 25.f;
     int bulletDamage = 10;
 
-    Gun<Bullet> pistol{pistolVelocity, pistolFireRate, pistolDamage};
+    Gun pistol{pistolVelocity, pistolFireRate, pistolDamage};
 
     // STATS
     int maxHealth = 50;

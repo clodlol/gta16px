@@ -65,7 +65,7 @@ void Officer::Load()
     officerSprite.setOrigin({TILE_SIZE_OFFICER / 2, TILE_SIZE_OFFICER / 2});
     officerSprite.setScale({16.f / TILE_SIZE_OFFICER, 16.f / TILE_SIZE_OFFICER});
 
-    pistol.Load("../assets/bullet.png");
+    pistol.Load();
 }
 
 void Officer::Update(float deltaTime, sf::View &camera, Player &player)
@@ -106,11 +106,12 @@ void Officer::Update(float deltaTime, sf::View &camera, Player &player)
 
     pistol.Update(deltaTime);
 
-    for (const Bullet &bullet : pistol.GetProjectiles())
+    for (Bullet &bullet : pistol.GetProjectiles())
     {
         if (player.GetBounds().findIntersection(bullet.GetBounds()))
         {
             player.TakeDamage(pistol.GetDamage() + bullet.GetDamage());
+            bullet.Erase();
         }
     }
 }

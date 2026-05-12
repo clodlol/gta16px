@@ -31,7 +31,9 @@ public:
     int GetDamage() const { return damage; }
     float GetVelocity() const { return velocity; }
 
-    bool IsExpired() const { return ((origin - sprite.getPosition()).length()) > maxDistance; }
+    void Erase() { expired = true; }
+
+    bool IsExpired() const { return expired; }
 
     friend class FlameGun;
 
@@ -41,9 +43,11 @@ private:
     sf::Vector2f origin{1.f, 1.f};
     sf::Vector2f direction{1.f, 1.f};
 
-    int damage = 10;
-    float velocity = 500.f;
-    float maxDistance = 100.f;
+    bool expired = false;
+
+    int damage;
+    float velocity;
+    float maxDistance;
 };
 
 class FlameGun
@@ -65,7 +69,7 @@ public:
         firing = false;
     }
 
-    const std::vector<FlameProjectile> &GetProjectiles() const { return projectiles; }
+    std::vector<FlameProjectile> &GetProjectiles() { return projectiles; }
     const sf::Texture &GetProjectileTexture() const { return flameProjectileTexture; }
 
     int GetDamage() const { return damage; }
@@ -99,6 +103,13 @@ public:
         for (FlameProjectile &proj : projectiles)
         {
             proj.sprite.move({cos(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime, sin(proj.GetDirection().angle().asRadians()) * (velocity + proj.GetVelocity()) * deltaTime});
+
+            if ((proj.origin - proj.sprite.getPosition()).length() > proj.maxDistance)
+            {
+                proj.expired = true;
+            }
+
+            // bounds checking is optional since flames die anyways
         }
 
         projectiles.erase(
@@ -124,8 +135,8 @@ private:
     float velocity = 1.f;
     float fireRate = 1.f; // bullets per second
     int damage = 0;
-    int intensity = 5;   // how many flames per burst
-    float spread = 0.5f; // how much spread, float from 0 to 1
+    int intensity = 3;    // how many flames per burst
+    float spread = 0.25f; // how much spread, float from 0 to 1
 
     bool firing = false;
     float cooldownTimer = 1 / fireRate;

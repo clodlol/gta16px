@@ -65,7 +65,7 @@ void Tank::Load()
 
     tankSprite.setScale({16.f / TILE_SIZE_TANK, 16.f / TILE_SIZE_TANK});
 
-    heavyCannon.Load("../assets/bullet.png");
+    heavyCannon.Load();
 }
 
 void Tank::Update(float deltaTime, sf::View &camera, Player &player)
@@ -110,11 +110,12 @@ void Tank::Update(float deltaTime, sf::View &camera, Player &player)
 
     heavyCannon.Update(deltaTime);
 
-    for (const Bullet &bullet : heavyCannon.GetProjectiles())
+    for (Bullet &bullet : heavyCannon.GetProjectiles())
     {
         if (player.GetBounds().findIntersection(bullet.GetBounds()))
         {
             player.TakeDamage(heavyCannon.GetDamage() + bullet.GetDamage());
+            bullet.Erase();
         }
     }
 }

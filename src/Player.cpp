@@ -61,7 +61,8 @@ void Player::Load()
 
     // gun.Load("../assets/bullet.png");
     // sword.Load();
-    flamethrower.Load();
+    // flamethrower.Load();
+    rocketLauncher.Load();
 }
 
 void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobSpawner &spawner)
@@ -182,28 +183,64 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
     //     }
     // }
 
+    // if (input.IsActionActive("Fire"))
+    //     flamethrower.Fire(FlameProjectile{flamethrower.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), flameDamage, flameVeocity, flameMaxDistance});
+    // else
+    //     flamethrower.StopFire();
+
+    // flamethrower.Update(deltaTime);
+
+    // for (FlameProjectile &proj : flamethrower.GetProjectiles())
+    // {
+    //     for (Officer *&officer : spawner.GetOfficers())
+    //     {
+    //         if (officer->GetBounds().findIntersection(proj.GetBounds()))
+    //         {
+    //             officer->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
+    //             proj.Erase();
+    //         }
+    //     }
+
+    //     for (Tank *&tank : spawner.GetTanks())
+    //     {
+    //         if (tank->GetBounds().findIntersection(proj.GetBounds()))
+    //         {
+    //             tank->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
+    //             proj.Erase();
+    //         }
+    //     }
+    // }
+
     if (input.IsActionActive("Fire"))
-        flamethrower.Fire(FlameProjectile{flamethrower.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), flameDamage, flameVeocity, flameMaxDistance});
+        rocketLauncher.Fire(RocketBullet{rocketLauncher.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), rocketDamage, rocketVelocity, rocketTimeLimit, rocketBlastRad, rocketBlastTime});
     else
-        flamethrower.StopFire();
+        rocketLauncher.StopFire();
 
-    flamethrower.Update(deltaTime);
+    rocketLauncher.Update(deltaTime);
 
-    for (const FlameProjectile &proj : flamethrower.GetProjectiles())
+    for (RocketBullet &rocket : rocketLauncher.GetProjectiles())
     {
+        std::cout << "Rockets in current loop: " << rocketLauncher.GetProjectiles().size() << "\n";
         for (Officer *&officer : spawner.GetOfficers())
         {
-            if (officer->GetBounds().findIntersection(proj.GetBounds()))
+            if (officer->GetBounds().findIntersection(rocket.GetBounds()))
             {
-                officer->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
+                if (!rocket.IsExploded())
+                    rocket.Explode();
+
+                officer->TakeDamage(rocketLauncher.GetDamage() + rocket.GetDamage());
             }
         }
 
         for (Tank *&tank : spawner.GetTanks())
         {
-            if (tank->GetBounds().findIntersection(proj.GetBounds()))
+
+            if (tank->GetBounds().findIntersection(rocket.GetBounds()))
             {
-                tank->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
+                if (!rocket.IsExploded())
+                    rocket.Explode();
+
+                tank->TakeDamage(rocketLauncher.GetDamage() + rocket.GetDamage());
             }
         }
     }
@@ -216,6 +253,7 @@ void Player::Draw(sf::RenderWindow &window)
         window.draw(playerSprite);
         // gun.Draw(window);
         // sword.Draw(window);
-        flamethrower.Draw(window);
+        // flamethrower.Draw(window);
+        rocketLauncher.Draw(window);
     }
 }
