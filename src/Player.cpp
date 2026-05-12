@@ -27,15 +27,23 @@ const sf::Sprite &Player::GetSprite() const
 
 void Player::TakeDamage(int sourceDamage)
 {
+    if (!alive)
+        return;
+
     if (immunityTimer <= 0.f && alive)
     {
         int damageTaken = sourceDamage - float(sourceDamage * defense / 100.f);
 
         health -= damageTaken;
 
-        std::cout << "Player took " << damageTaken << " damage, current health: " << health << "\n";
-
-        immunityTimer = immunityTime;
+        if (damageTaken > 10)
+        {
+            immunityTimer = immunityTime;
+        }
+        else
+        {
+            immunityTimer = 0.1f;
+        }
     }
 
     if (health <= 0)
@@ -53,15 +61,21 @@ void Player::Load()
         return;
     }
 
+    if (!font.openFromFile("../assets/font.ttf"))
+    {
+        std::cout << "Failed to load font\n";
+        return;
+    }
+
     playerSprite.setTextureRect(sf::IntRect({0, 0}, {TILE_SIZE_PLAYER, TILE_SIZE_PLAYER}));
 
     playerSprite.setPosition({1000.f, 1000.f});
     playerSprite.setOrigin({TILE_SIZE_PLAYER / 2, TILE_SIZE_PLAYER / 2});
     playerSprite.setScale({16.f / TILE_SIZE_PLAYER, 16.f / TILE_SIZE_PLAYER});
 
-    // gun.Load("../assets/bullet.png");
-    // sword.Load();
-    // flamethrower.Load();
+    gun.Load();
+    sword.Load();
+    flamethrower.Load();
     rocketLauncher.Load();
 }
 
@@ -74,13 +88,34 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
         deathTimer -= deltaTime;
         if (deathTimer <= 0.f)
         {
-            // respawn and reset wanted level
+            playerSprite.setPosition(spawnLocation);
             alive = true;
-            health = INT_MAX;
+            health = maxHealth;
             deathTimer = respawnTime;
         }
         else
             return;
+    }
+
+    if (input.IsActionActive("Hero0"))
+    {
+        hero = 0;
+        std::cout << "Hero 0\n";
+    }
+    if (input.IsActionActive("Hero1"))
+    {
+        hero = 1;
+        std::cout << "Hero 1\n";
+    }
+    if (input.IsActionActive("Hero2"))
+    {
+        hero = 2;
+        std::cout << "Hero 2\n";
+    }
+    if (input.IsActionActive("Hero3"))
+    {
+        hero = 3;
+        std::cout << "Hero 3\n";
     }
 
     sf::Vector2f direction{0.f, 0.f};
@@ -136,87 +171,122 @@ void Player::Update(float deltaTime, InputManager &input, sf::View &camera, MobS
 
     camera.setCenter(newCamCenter);
 
-    // if (input.IsActionActive("Fire"))
-    //     gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), bulletDamage, bulletVelocity});
-    // else
-    //     gun.StopFire();
-
-    // gun.Update(deltaTime);
-
-    // for (const Bullet &bullet : gun.GetProjectiles())
-    // {
-    //     for (Officer *&officer : spawner.GetOfficers())
-    //     {
-    //         if (officer->GetBounds().findIntersection(bullet.GetBounds()))
-    //         {
-    //             officer->TakeDamage(gun.GetDamage() + bullet.GetDamage());
-    //         }
-    //     }
-
-    //     for (Tank *&tank : spawner.GetTanks())
-    //     {
-    //         if (tank->GetBounds().findIntersection(bullet.GetBounds()))
-    //         {
-    //             tank->TakeDamage(gun.GetDamage() + bullet.GetDamage());
-    //         }
-    //     }
-    // }
-
-    // if (input.IsActionActive("Fire") && !sword.IsSwinging())
-    //     sword.Swing(*this, input.GetMousePosition().angle());
-
-    // sword.Update(deltaTime, *this);
-
-    // for (Officer *&officer : spawner.GetOfficers())
-    // {
-    //     if (officer->GetBounds().findIntersection(sword.GetBounds()))
-    //     {
-    //         officer->TakeDamage(sword.GetDamage());
-    //     }
-    // }
-
-    // for (Tank *&tank : spawner.GetTanks())
-    // {
-    //     if (tank->GetBounds().findIntersection(sword.GetBounds()))
-    //     {
-    //         tank->TakeDamage(sword.GetDamage());
-    //     }
-    // }
-
-    // if (input.IsActionActive("Fire"))
-    //     flamethrower.Fire(FlameProjectile{flamethrower.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), flameDamage, flameVeocity, flameMaxDistance});
-    // else
-    //     flamethrower.StopFire();
-
-    // flamethrower.Update(deltaTime);
-
-    // for (FlameProjectile &proj : flamethrower.GetProjectiles())
-    // {
-    //     for (Officer *&officer : spawner.GetOfficers())
-    //     {
-    //         if (officer->GetBounds().findIntersection(proj.GetBounds()))
-    //         {
-    //             officer->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
-    //             proj.Erase();
-    //         }
-    //     }
-
-    //     for (Tank *&tank : spawner.GetTanks())
-    //     {
-    //         if (tank->GetBounds().findIntersection(proj.GetBounds()))
-    //         {
-    //             tank->TakeDamage(proj.GetDamage() + flamethrower.GetDamage());
-    //             proj.Erase();
-    //         }
-    //     }
-    // }
-
-    if (input.IsActionActive("Fire"))
+    if (input.IsActionActive("Fire") && hero == 0)
+    {
+        gun.Fire(Bullet{gun.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), bulletDamage, bulletVelocity});
+    }
+    else if (input.IsActionActive("Fire") && !sword.IsSwinging() && hero == 1)
+    {
+        sword.Swing(*this, input.GetMousePosition().angle());
+    }
+    else if (input.IsActionActive("Fire") && hero == 2)
+    {
+        flamethrower.Fire(FlameProjectile{flamethrower.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), flameDamage, flameVelocity, flameMaxDistance});
+    }
+    else if (input.IsActionActive("Fire") && hero == 3)
+    {
         rocketLauncher.Fire(RocketBullet{rocketLauncher.GetProjectileTexture(), playerSprite.getPosition(), input.GetMousePosition(), rocketDamage, rocketVelocity, rocketTimeLimit, rocketBlastRad, rocketBlastTime});
+    }
     else
+    {
+        gun.StopFire();
+        flamethrower.StopFire();
         rocketLauncher.StopFire();
+    }
 
+    gun.Update(deltaTime);
+    sword.Update(deltaTime, *this);
+    flamethrower.Update(deltaTime);
     rocketLauncher.Update(deltaTime);
+
+    for (Officer *&officer : spawner.GetOfficers())
+    {
+        if (officer->GetBounds().findIntersection(sword.GetBounds()))
+        {
+            officer->TakeDamage(sword.GetDamage());
+        }
+    }
+
+    for (Tank *&tank : spawner.GetTanks())
+    {
+        if (tank->GetBounds().findIntersection(sword.GetBounds()))
+        {
+            tank->TakeDamage(sword.GetDamage());
+        }
+    }
+
+    for (Boss *&boss : spawner.GetBosses())
+    {
+
+        if (boss->GetBounds().findIntersection(sword.GetBounds()))
+        {
+            boss->TakeDamage(sword.GetDamage());
+        }
+    }
+
+    for (Bullet &bullet : gun.GetProjectiles())
+    {
+        for (Officer *&officer : spawner.GetOfficers())
+        {
+            if (officer->GetBounds().findIntersection(bullet.GetBounds()))
+            {
+                officer->TakeDamage(gun.GetDamage() + bullet.GetDamage());
+                bullet.Erase();
+            }
+        }
+
+        for (Tank *&tank : spawner.GetTanks())
+        {
+
+            if (tank->GetBounds().findIntersection(bullet.GetBounds()))
+            {
+                tank->TakeDamage(gun.GetDamage() + bullet.GetDamage());
+                bullet.Erase();
+            }
+        }
+
+        for (Boss *&boss : spawner.GetBosses())
+        {
+
+            if (boss->GetBounds().findIntersection(bullet.GetBounds()))
+            {
+                boss->TakeDamage(gun.GetDamage() + bullet.GetDamage());
+                bullet.Erase();
+            }
+        }
+    }
+
+    for (FlameProjectile &flame : flamethrower.GetProjectiles())
+    {
+        for (Officer *&officer : spawner.GetOfficers())
+        {
+            if (officer->GetBounds().findIntersection(flame.GetBounds()))
+            {
+                officer->TakeDamage(flamethrower.GetDamage() + flame.GetDamage());
+                flame.Erase();
+            }
+        }
+
+        for (Tank *&tank : spawner.GetTanks())
+        {
+
+            if (tank->GetBounds().findIntersection(flame.GetBounds()))
+            {
+                tank->TakeDamage(flamethrower.GetDamage() + flame.GetDamage());
+                flame.Erase();
+            }
+        }
+
+        for (Boss *&boss : spawner.GetBosses())
+        {
+
+            if (boss->GetBounds().findIntersection(flame.GetBounds()))
+            {
+                boss->TakeDamage(flamethrower.GetDamage() + flame.GetDamage());
+                flame.Erase();
+            }
+        }
+    }
 
     for (RocketBullet &rocket : rocketLauncher.GetProjectiles())
     {
@@ -262,9 +332,23 @@ void Player::Draw(sf::RenderWindow &window)
     if (alive)
     {
         window.draw(playerSprite);
-        // gun.Draw(window);
-        // sword.Draw(window);
-        // flamethrower.Draw(window);
+        gun.Draw(window);
+        sword.Draw(window);
+        flamethrower.Draw(window);
         rocketLauncher.Draw(window);
+
+        sf::RectangleShape healthBar({(10.f * float(float(health) / maxHealth)), 2.5f});
+        healthBar.setPosition({playerSprite.getPosition().x - 5.f, playerSprite.getPosition().y + 16.f});
+        healthBar.setFillColor(sf::Color(255, 255, 255));
+
+        window.draw(healthBar);
+    }
+    else
+    {
+        sf::Text text(font);
+        text.setString(std::to_string((int)deathTimer));
+        text.setCharacterSize(16);
+        text.setPosition(playerSprite.getPosition());
+        window.draw(text);
     }
 }

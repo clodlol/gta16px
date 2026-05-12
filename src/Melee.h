@@ -14,7 +14,7 @@ class Player;
 class Melee : Collidable
 {
 public:
-    Melee(float speed, float rate, int dmg) : meleeTexture{}, meleeSprite{meleeTexture}, damage(dmg), swingSpeed(speed)
+    Melee(float speed, int dmg) : meleeTexture{}, meleeSprite{meleeTexture}, damage(dmg), swingSpeed(speed)
     {
         angleSwung = -PI / 2.f;
     }

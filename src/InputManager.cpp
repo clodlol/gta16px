@@ -34,4 +34,9 @@ void InputManager::Update(sf::RenderWindow &window, sf::View &camera)
     mousePos = worldMouse - camera.getCenter();
 
     // std::cout << "Mouse X: " << mousePos.x << " Mouse Y: " << mousePos.y << "\n";
+
+    actionMap["Hero0"] = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1);
+    actionMap["Hero1"] = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2);
+    actionMap["Hero2"] = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3);
+    actionMap["Hero3"] = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num4);
 }

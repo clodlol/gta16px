@@ -53,7 +53,7 @@ private:
 
     float throwerVel = 40.f;
     float throwerRate = 300.f;
-    int throwerDmg = 2;
+    int throwerDmg = 10;
     int throwerInty = 5;
     float throwerSpread = 0.75f;
 
@@ -66,9 +66,9 @@ private:
     float rocketBlastRad = 25.f;
     float rocketBlastTime = 1.f;
 
-    int flameDmg = 2;
+    int flameDmg = 10;
     float flameVel = 10.f;
-    float flameMaxDist = 125.f;
+    float flameMaxDist = 200.f;
 
     Gun gun{gunVelocity, gunFireRate, gunDamage};
     Gun turret{turretVelocity, turretRate, turretDamage};
